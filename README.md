@@ -11,7 +11,14 @@ Marcus, Ryan, and Olga Papaemmanouil. "[WiSeDB: A Learning-based Workload Manage
 
 
 
-
-
 ## What's it do?
+
+WiSeDB is designed to assist cloud applications in making three decisions:
+
+1. Resource provisioning: determining the number of VMs needed to process a workload
+1. Query placement: determining which query should execute on which VM
+1. Query scheduling: scheduling the queries within a VM
+
+![Animation of three tasks](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/workloadmang.gif?raw=true)
+
 
