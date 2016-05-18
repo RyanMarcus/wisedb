@@ -51,4 +51,8 @@ WiSeDB is a system that uses machine learning in order to generate *customized h
 
 Of course, WiSeDB does not always find an optimal solution, but in our experiments we find that it always outperforms standard heuristics.
 
+More complicated scenarios can emerge when the SLA changes, for example, to have different deadlines for different query types, to restrict the *average* performance of a query, or to enforce a percentile-based constraint (e.g. 90% of the queries must complete within 10 minutes).
+
+![example of per query SLA](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/sla.png?raw=true)
+
 
