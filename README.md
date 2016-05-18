@@ -9,8 +9,6 @@ Marcus, Ryan, and Olga Papaemmanouil. "[WiSeDB: A Learning-based Workload Manage
 
 
 
-
-
 ## What's it do?
 
 WiSeDB is designed to assist cloud applications in making three types of decisions:
@@ -19,7 +17,7 @@ WiSeDB is designed to assist cloud applications in making three types of decisio
 1. Query placement: determining which query should execute on which VM
 1. Query scheduling: scheduling the queries within a VM
 
-WiSeDB provides a complete, integrated answer to these problems, and it does so in an *SLA-aware* way.
+WiSeDB provides a complete, integrated answer to these problems, and it does so in an *SLA-aware* way. WiSeDB utilizes *machine learning* in order to create *custom heuristics* that are tailored to an application's workload and performance goal.
 
 ![Animation of three tasks](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/workloadmang.gif?raw=true)
 
@@ -59,3 +57,76 @@ WiSeDB may not learn a heuristic that is *substantially* better than a human-cra
 
 ![beats human heuristics](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/graph.png?raw=true)
 
+
+# Usage
+
+```java
+
+// first, we build a map that tells us how long each of our
+// query types takes to process on different VMs.
+// here, we create type 1 which takes 20 seconds, type 2
+// which takes 30 seconds, and type 3 that takes 40 seconds on a
+// t2.small machine.
+Map<Integer, Map<VMType, Integer>> latency = new HashMap<>();
+Map<VMType, Integer> forMachine = new HashMap<>();
+forMachine.put(VMType.T2_SMALL, 20000);
+latency.put(1, forMachine);
+
+forMachine = new HashMap<>();
+forMachine.put(VMType.T2_SMALL, 30000);
+latency.put(2, forMachine);
+
+forMachine = new HashMap<>();
+forMachine.put(VMType.T2_SMALL, 40000);
+latency.put(3, forMachine);
+
+
+// here, we specify the IOs used by each task
+Map<Integer, Map<VMType, Integer>> ios = new HashMap<>();
+forMachine = new HashMap<>();
+forMachine.put(VMType.T2_SMALL, 10);
+ios.put(1, forMachine);
+
+forMachine = new HashMap<>();
+forMachine.put(VMType.T2_SMALL, 10);
+ios.put(2, forMachine);
+
+forMachine = new HashMap<>();
+forMachine.put(VMType.T2_SMALL, 10);
+ios.put(3, forMachine);
+
+// here, we create the workload specification,
+// which gives the latency data, the IO data,
+// the machine types we want to make available,
+// and the SLA.
+WorkloadSpecification wf = new WorkloadSpecification(
+		latency, 
+		ios, 
+		new VMType[] { VMType.T2_SMALL },
+		new MaxLatencySLA(60000 + 91000, 1));
+
+// here, we construct a training set of 5000 workloads of size
+// 10 in order to train our model.
+String training = WiSeDBUtils.constructTrainingData(wf, 5000, 10);
+
+// here we build our workload (two instances of each query type)
+Map<Integer, Integer> queryFreqs = new HashMap<>();
+queryFreqs.put(1, 2);
+queryFreqs.put(2, 2);
+queryFreqs.put(3, 2);
+
+// here we use WiSeDB to get our workload management strategy
+ByteArrayInputStream bis = new ByteArrayInputStream(training.getBytes());
+List<Action> a = WiSeDBUtils.doPlacement(bis, wf, queryFreqs);
+
+System.out.println(a);
+```
+
+Output:
+```
+[[START t2.small(3) (0)], [ASSIGN 3], [ASSIGN 2], [ASSIGN 1], [START t2.small(3) (0)], [ASSIGN 3], [ASSIGN 2], [ASSIGN 1]]
+```
+
+# License
+
+WiSeDB is "research-ware", and is probably filled with bugs, undocumented features, and general trouble. It is GPLv3 licensed.

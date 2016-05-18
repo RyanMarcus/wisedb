@@ -84,6 +84,7 @@ public class WiSeDBUtilsTest {
 		
 		List<Action> a = WiSeDBUtils.doPlacement(bis, wf, queryFreqs);
 	
+		System.out.println(a);
 		
 		int cost = CostModelUtil.getCostForPlan(a, wf.getSLA(), wf.getQueryTimePredictor());
 		
