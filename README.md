@@ -35,15 +35,15 @@ Imagine you have a workload with 2 `A`s, 2 `B`s, and `2` Cs. Your goal (SLA) is 
 
 One possible solution, using the traditional `FFD` heuristic, is:
 
-* VM1: [C, C] (8 minutes)
-* VM2: [C, B] (7 minutes)
-* VM3: [B, B, A] (8 minutes) 
-* VM4: [A, A, A] (6 minutes)
+* VM1: `[C, C]` (8 minutes)
+* VM2: `[C, B]` (7 minutes)
+* VM3: `[B, B, A]` (8 minutes) 
+* VM4: `[A, A, A]` (6 minutes)
 
 ... which uses four virtual machines. However, the solution we really want is:
 
-* VM1: [C, B, A] (9 minutes)
-* VM2: [C, B, A] (9 minutes)
+* VM1: `[C, B, A]` (9 minutes)
+* VM2: `[C, B, A]` (9 minutes)
 
 ... which uses only two virtual machines.
 
