@@ -55,4 +55,7 @@ More complicated scenarios can emerge when the SLA changes, for example, to have
 
 ![example of per query SLA](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/sla.png?raw=true)
 
+WiSeDB may not learn a heuristic that is *substantially* better than a human-crafted default for a particular constraint, but it will match or slightly outperform them. For more information, see the papers.
+
+![beats human heuristics](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/graph.png?raw=true)
 
