@@ -25,10 +25,10 @@ import java.util.stream.IntStream;
 
 import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.AStarGraphSearch;
 import edu.brandeis.wisedb.scheduler.GraphSearcher;
 import edu.brandeis.wisedb.scheduler.Heuristic;
-import edu.brandeis.wisedb.scheduler.training.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.training.UnassignedQueryTimeHeuristic;
 
 public class AugmentedHeuristicExperiment {

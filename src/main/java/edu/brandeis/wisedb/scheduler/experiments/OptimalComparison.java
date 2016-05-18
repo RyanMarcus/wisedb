@@ -30,16 +30,16 @@ import java.util.logging.Logger;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
+import edu.brandeis.wisedb.cost.sla.AverageLatencyModelSLA;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
+import edu.brandeis.wisedb.cost.sla.PerQuerySLA;
+import edu.brandeis.wisedb.cost.sla.PercentSLA;
 import edu.brandeis.wisedb.scheduler.AStarGraphSearch;
 import edu.brandeis.wisedb.scheduler.Action;
 import edu.brandeis.wisedb.scheduler.FirstFitDecreasingGraphSearch;
 import edu.brandeis.wisedb.scheduler.GraphSearcher;
-import edu.brandeis.wisedb.scheduler.training.AverageLatencyModelSLA;
 import edu.brandeis.wisedb.scheduler.training.CostModelUtil;
 import edu.brandeis.wisedb.scheduler.training.ModelWorkloadGenerator;
-import edu.brandeis.wisedb.scheduler.training.PerQuerySLA;
-import edu.brandeis.wisedb.scheduler.training.PercentSLA;
-import edu.brandeis.wisedb.scheduler.training.MaxLatencySLA;
 
 public class OptimalComparison {
 

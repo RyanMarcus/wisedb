@@ -19,68 +19,57 @@
 // { end copyright } 
  
 
-package edu.brandeis.wisedb.scheduler.training;
+package edu.brandeis.wisedb.cost.sla;
 
 import java.util.Map;
 
 import edu.brandeis.wisedb.cost.ModelQuery;
-import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.TightenableSLA;
 
-public class MaxLatencySLA implements TightenableSLA {
+public class AverageLatencyModelSLA implements TightenableSLA {
 
 	private int latency;
 	private int penalty;
 	
-	public MaxLatencySLA(int minLat, int penalty) {
-		latency = minLat;
+	public AverageLatencyModelSLA(int avgLatency, int penalty) {
+		latency = avgLatency;
 		this.penalty = penalty;
 	}
 	
 	@Override
 	public int calculatePenalty(Map<ModelQuery, Integer> latencies) {
-		return latencies.values().stream().mapToInt((Integer i) -> {
-			if (i > latency) {
-				return (i - latency) * penalty;
-			}
+		if (latencies.values().size() == 0)
 			return 0;
-		}).sum();
+		
+		
+		double avg = latencies.values().stream().mapToInt((Integer i) -> {
+			return i.intValue();
+		}).average().getAsDouble();
+		
+		if (avg < latency)
+			return 0;
+		
+		return (int)((avg - latency) * penalty);
 	}
-
 	
-	public static ModelSLA fiveMinuteSLA() {
-		return new MaxLatencySLA(5 * 60 * 1000, 1);
+	public static TightenableSLA fiveMinuteSLA() {
+		return new AverageLatencyModelSLA(5 * 60 * 1000, 1);
 	}
 
-	public static ModelSLA tenMinuteSLA() {
-		return new MaxLatencySLA(10 * 60 * 1000, 1);
-
-	}
-	
-	public static ModelSLA fifteenMinuteSLA() {
-		return new MaxLatencySLA(15 * 60 * 1000, 1);
+	public static TightenableSLA tenMinuteSLA() {
+		return new AverageLatencyModelSLA(10 * 60 * 1000, 1);
 
 	}
 
 	@Override
 	public boolean queryOrderMatters() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public TightenableSLA tighten(int amt) {
-		return new MaxLatencySLA(latency - amt, penalty);
+		return new AverageLatencyModelSLA(latency - amt, penalty);
 	}
 	
-	@Override
-	public String toString() {
-		return "[Bin packing SLA: " + latency + "]";
-	}
 
-	@Override
-	public boolean isMonotonicIncreasing() {
-		return true;
-	}
-	
-	
 }

@@ -34,13 +34,13 @@ import edu.brandeis.wisedb.cost.Cost;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.Action;
 import edu.brandeis.wisedb.scheduler.FirstFitDecreasingGraphSearch;
 import edu.brandeis.wisedb.scheduler.GraphSearcher;
 import edu.brandeis.wisedb.scheduler.PackUntilViolationGraphSearch;
 import edu.brandeis.wisedb.scheduler.training.CostModelUtil;
 import edu.brandeis.wisedb.scheduler.training.ModelWorkloadGenerator;
-import edu.brandeis.wisedb.scheduler.training.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.DTSearcher;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 

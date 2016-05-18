@@ -25,7 +25,7 @@ import java.io.File;
 
 import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.TightenableSLA;
-import edu.brandeis.wisedb.scheduler.training.PercentSLA;
+import edu.brandeis.wisedb.cost.sla.PercentSLA;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 
 public class TrainingTimeComparision {

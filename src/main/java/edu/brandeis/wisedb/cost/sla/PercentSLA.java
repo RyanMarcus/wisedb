@@ -19,7 +19,7 @@
 // { end copyright } 
  
 
-package edu.brandeis.wisedb.scheduler.training;
+package edu.brandeis.wisedb.cost.sla;
 
 import java.util.HashMap;
 import java.util.Map;

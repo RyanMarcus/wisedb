@@ -36,8 +36,27 @@ import edu.brandeis.wisedb.scheduler.Action;
 import edu.brandeis.wisedb.scheduler.SchedulerUtils;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 
+/**
+ * A utility class that wraps the user-facing features of WiSeDB
+ * 
+ * @author "Ryan Marcus <rcmarcus@brandeis.edu>"
+ *
+ */
 public class WiSeDBUtils {
 	
+	/**
+	 * Constructs a training dataset (to train a decision tree model) from the given
+	 * workload specification (containing query templates and an SLA).
+	 * 
+	 * The training set will contain trainingSetSize random workloads, each with
+	 * numQueriesPerWorkload random queries. trainingSetSize should be large (say 2000)
+	 * and numQueriesPerWorkload should be small (8 - 12).
+	 * 
+	 * @param wf
+	 * @param trainingSetSize
+	 * @param numQueriesPerWorkload
+	 * @return the training data, as a string
+	 */
 	public static String constructTrainingData(
 			WorkloadSpecification wf,
 			int trainingSetSize,
@@ -58,6 +77,16 @@ public class WiSeDBUtils {
 	}
 	
 	
+	/**
+	 * Given training data, a workload specification, and a map indicating how many queries
+	 * of each type are in a workload, returns a set of actions that can be performed to schedule
+	 * the workload.
+	 * 
+	 * @param trainingData the training data, produced from constructTrainingData
+	 * @param wf the workload specification
+	 * @param queryFrequencies a map where the keys are the query IDs and the values are the frequency of the query inside the workload
+	 * @return actions to schedule the workload
+	 */
 	public static List<Action> doPlacement(
 			InputStream trainingData, 
 			WorkloadSpecification wf,

@@ -29,12 +29,12 @@ import java.util.stream.IntStream;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
 import edu.brandeis.wisedb.cost.TightenableSLA;
+import edu.brandeis.wisedb.cost.sla.PercentSLA;
 import edu.brandeis.wisedb.scheduler.AStarGraphSearch;
 import edu.brandeis.wisedb.scheduler.Action;
 import edu.brandeis.wisedb.scheduler.GraphSearcher;
 import edu.brandeis.wisedb.scheduler.training.CostModelUtil;
 import edu.brandeis.wisedb.scheduler.training.ModelWorkloadGenerator;
-import edu.brandeis.wisedb.scheduler.training.PercentSLA;
 import edu.brandeis.wisedb.scheduler.training.UnassignedQueryTimeHeuristic;
 
 public class IncrementalSLAExperiment {

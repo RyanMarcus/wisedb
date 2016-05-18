@@ -27,9 +27,9 @@ import edu.brandeis.wisedb.aws.VMType;
 import edu.brandeis.wisedb.cost.Cost;
 import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
-import edu.brandeis.wisedb.scheduler.training.AverageLatencyModelSLA;
-import edu.brandeis.wisedb.scheduler.training.PerQuerySLA;
-import edu.brandeis.wisedb.scheduler.training.MaxLatencySLA;
+import edu.brandeis.wisedb.cost.sla.AverageLatencyModelSLA;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
+import edu.brandeis.wisedb.cost.sla.PerQuerySLA;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.DTSearcher;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 

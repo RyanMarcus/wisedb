@@ -27,7 +27,7 @@ import edu.brandeis.wisedb.aws.VMType;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
-import edu.brandeis.wisedb.scheduler.training.MaxLatencySLA;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 
 public class SmallTreeGenerator {

@@ -27,10 +27,10 @@ import java.util.Arrays;
 import edu.brandeis.wisedb.cost.Cost;
 import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
+import edu.brandeis.wisedb.cost.sla.PerQuerySLA;
 import edu.brandeis.wisedb.scheduler.FirstFitDecreasingGraphSearch;
 import edu.brandeis.wisedb.scheduler.PackUntilViolationGraphSearch;
 import edu.brandeis.wisedb.scheduler.PackUntilViolationRandomGraphSearch;
-import edu.brandeis.wisedb.scheduler.training.PerQuerySLA;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.DTSearcher;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 

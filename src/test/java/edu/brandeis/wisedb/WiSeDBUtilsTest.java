@@ -31,9 +31,9 @@ import java.util.Map;
 import org.junit.Test;
 
 import edu.brandeis.wisedb.aws.VMType;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.Action;
 import edu.brandeis.wisedb.scheduler.training.CostModelUtil;
-import edu.brandeis.wisedb.scheduler.training.MaxLatencySLA;
 
 public class WiSeDBUtilsTest {
 
