@@ -19,7 +19,7 @@ WiSeDB is designed to assist cloud applications in making three types of decisio
 
 WiSeDB provides a complete, integrated answer to these problems, and it does so in an *SLA-aware* way. WiSeDB utilizes *machine learning* in order to create *custom heuristics* that are tailored to an application's workload and performance goal.
 
-![Animation of three tasks](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/workloadmang.gif?raw=true)
+![Animation of three tasks](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/workloadmang.gif)
 
 ## Example
 
@@ -50,11 +50,11 @@ Of course, WiSeDB does not always find an optimal solution, but in our experimen
 
 More complicated scenarios can emerge when the SLA changes, for example, to have different deadlines for different query types, to restrict the *average* performance of a query, or to enforce a percentile-based constraint (e.g. 90% of the queries must complete within 10 minutes).
 
-![example of per query SLA](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/sla.png?raw=true)
+![example of per query SLA](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/sla.png)
 
 WiSeDB may not learn a heuristic that is *substantially* better than a human-crafted default for a particular constraint, but it will match or slightly outperform them. For more information, see the papers.
 
-![beats human heuristics](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/graph.png?raw=true)
+![beats human heuristics](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/graph.png)
 
 
 # Usage
