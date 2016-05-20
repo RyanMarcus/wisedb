@@ -73,7 +73,7 @@ public class PercentSLA implements TightenableSLA {
 	}
 	
 	public static TightenableSLA nintyTenSLA() {
-		return new PercentSLA(0.90f, 9 * 60 * 1000);
+		return new PercentSLA(0.90f, 10 * 60 * 1000);
 	}
 	
 	public static TightenableSLA nintyTenSLA(int deadline) {
@@ -118,5 +118,10 @@ public class PercentSLA implements TightenableSLA {
 	@Override
 	public TightenableSLA tighten(int amt) {
 		return new PercentSLA(proportion, underLimit - amt);
+	}
+	
+	
+	public int recommendedWorkloadSizeForSpeed() {
+		return 7;
 	}
 }

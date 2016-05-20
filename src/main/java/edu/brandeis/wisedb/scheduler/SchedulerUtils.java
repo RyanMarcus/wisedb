@@ -53,14 +53,14 @@ public class SchedulerUtils {
 		
 		algos.add(new FirstFitDecreasingGraphSearch(wf.getSLA(), qtp, false));
 		algos.add(new FirstFitDecreasingGraphSearch(wf.getSLA(), qtp, true));
-		algos.add(new EachTypeGraphSearch(qtp, wf.getSLA()));
+		algos.add(new EachTypeGraphSearch(qtp));
 		
 		
 		Optional<List<Action>> min = algos.stream()
 		.map(gs -> gs.schedule(toSchedule))
 		.min((a, b) -> {
-			int aCost = CostModelUtil.getCostForPlan(toSchedule, a, wf.getSLA(), qtp);
-			int bCost = CostModelUtil.getCostForPlan(toSchedule, b, wf.getSLA(), qtp);
+			int aCost = Math.abs(CostModelUtil.getCostForPlan(toSchedule, a, wf.getSLA(), qtp));
+			int bCost = Math.abs(CostModelUtil.getCostForPlan(toSchedule, b, wf.getSLA(), qtp));
 			
 			return aCost - bCost;
 		});

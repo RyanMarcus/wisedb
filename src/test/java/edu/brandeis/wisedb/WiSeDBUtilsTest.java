@@ -21,19 +21,31 @@
 
 package edu.brandeis.wisedb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
 import edu.brandeis.wisedb.aws.VMType;
+import edu.brandeis.wisedb.cost.ModelQuery;
+import edu.brandeis.wisedb.cost.ModelSLA;
+import edu.brandeis.wisedb.cost.sla.AverageLatencyModelSLA;
 import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
+import edu.brandeis.wisedb.cost.sla.PerQuerySLA;
+import edu.brandeis.wisedb.cost.sla.PercentSLA;
 import edu.brandeis.wisedb.scheduler.Action;
+import edu.brandeis.wisedb.scheduler.FirstFitDecreasingGraphSearch;
+import edu.brandeis.wisedb.scheduler.GraphSearcher;
+import edu.brandeis.wisedb.scheduler.PackNGraphSearch;
 import edu.brandeis.wisedb.scheduler.training.CostModelUtil;
+import edu.brandeis.wisedb.scheduler.training.ModelWorkloadGenerator;
 
 public class WiSeDBUtilsTest {
 
@@ -88,7 +100,84 @@ public class WiSeDBUtilsTest {
 		
 		int cost = CostModelUtil.getCostForPlan(a, wf.getSLA(), wf.getQueryTimePredictor());
 		
-		assertEquals(14, cost);
+		assertEquals(32, cost);
 	}
+	
+	
+	@Test
+	public void reproduce7c() {
+		// here, we will reproduce graph 7c from the paper.
+		
+		VMType[] types = new VMType[] { VMType.T2_MEDIUM };
+		ModelSLA[] slas = new ModelSLA[] {
+				PerQuerySLA.getLatencyTimesN(3.0),
+				AverageLatencyModelSLA.tenMinuteSLA(),
+				MaxLatencySLA.fifteenMinuteSLA(),
+				PercentSLA.nintyTenSLA()
+		};
+
+		WorkloadSpecification[] ws = Arrays.stream(slas)
+				.map(sla -> new WorkloadSpecification(types, sla))
+				.toArray(i -> new WorkloadSpecification[i]);
+
+		String[] training = Arrays.stream(ws)
+				.map(wsp -> {
+					System.out.println("Training on " + wsp.getSLA());
+					// difference from paper: train on only 500 so we can run the test
+					// faster on older machines with only two threads (instead of 12)
+					return WiSeDBUtils.constructTrainingData(wsp, 500, wsp.getSLA().recommendedWorkloadSizeForSpeed());
+				})
+				.toArray(i -> new String[i]);
+				
+
+		System.out.println("Done training!");
+		
+		// difference from paper: use 2000 instead of 5000 queries for faster scheduling
+		Set<ModelQuery> workload = ModelWorkloadGenerator.randomQueries(2000, 42, ws[0].getQueryTimePredictor().QUERY_TYPES);
+		
+		System.out.println("Created sample workload");
+		
+		// get all costs
+		int[] ffd = new int[slas.length];
+		int[] ffi = new int[slas.length];
+		int[] pack9 = new int[slas.length];
+		int[] dt = new int[slas.length];
+		
+		for (int i = 0; i < slas.length; i++) {
+			GraphSearcher ffdSearch = new FirstFitDecreasingGraphSearch(ws[i].getSLA(), ws[i].getQueryTimePredictor());
+			GraphSearcher ffiSearch = new FirstFitDecreasingGraphSearch(ws[i].getSLA(), ws[i].getQueryTimePredictor(), true);
+			GraphSearcher pack9search = new PackNGraphSearch(9, ws[i].getQueryTimePredictor(), ws[i].getSLA());
+			
+			ffd[i] = CostModelUtil.getCostForPlan(ffdSearch.schedule(workload), ws[i].getSLA());			
+			ffi[i] = CostModelUtil.getCostForPlan(ffiSearch.schedule(workload), ws[i].getSLA());
+			pack9[i] = CostModelUtil.getCostForPlan(pack9search.schedule(workload), ws[i].getSLA());
+			
+			// not exactly reproducing: WiSeDBUtils does sanity checks on the
+			// schedules produced.
+			ByteArrayInputStream bis = new ByteArrayInputStream(training[i].getBytes());
+			dt[i] = CostModelUtil.getCostForPlan(WiSeDBUtils.doPlacement(bis, ws[i], workload), ws[i].getSLA());
+		}
+		
+
+
+		/*
+		 * PerQuerySLA.getLatencyTimesN(3.0),
+		 * AverageLatencyModelSLA.tenMinuteSLA(),
+		 * MaxLatencySLA.fifteenMinuteSLA(),
+		 * PercentSLA.nintyTenSLA()
+		 */
+		
+		
+		assertTrue(dt[0] <= ffi[0] && dt[0] <= ffd[0] && dt[0] <= pack9[0]);
+		assertTrue(dt[1] <= ffi[1] && dt[1] <= ffd[1] && dt[1] <= pack9[1]);
+		assertTrue(dt[2] <= ffi[2] && dt[2] <= ffd[2] && dt[2] <= pack9[2]);
+		assertTrue(dt[3] <= ffi[3] && dt[3] <= ffd[3] && dt[3] <= pack9[3]);
+
+		
+	}
+	
+
+	
+
 
 }

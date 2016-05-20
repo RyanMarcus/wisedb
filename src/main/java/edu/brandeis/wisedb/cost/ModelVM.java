@@ -120,10 +120,13 @@ public class ModelVM implements Comparable<ModelVM> {
 
 	public int getCostForQueries(QueryTimePredictor qtp) {
 
-		return queries.stream()
-				.mapToInt(q -> getCostForQuery(qtp, q))
-				.sum();
-
+		int toR = 0;
+		for (ModelQuery q : queries) {
+			toR += getCostForQuery(qtp, q);
+		}
+		
+		return toR;
+		
 
 	}
 
@@ -205,14 +208,7 @@ public class ModelVM implements Comparable<ModelVM> {
 
 	@Override
 	public int hashCode() {
-		int hash = 0;
-		hash += type.hashCode();
-
-		for (ModelQuery q : queries) {
-			hash += q.hashCode();
-		}
-
-		return hash;
+		return queries.hashCode();
 	}
 
 

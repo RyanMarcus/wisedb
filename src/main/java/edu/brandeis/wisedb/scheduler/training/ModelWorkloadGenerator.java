@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import edu.brandeis.wisedb.cost.ModelQuery;
+import edu.brandeis.wisedb.cost.QueryTimePredictor;
 import edu.brandeis.wisedb.cost.SetLatencyModelQuery;
 
 public class ModelWorkloadGenerator {
@@ -36,7 +37,7 @@ public class ModelWorkloadGenerator {
 	}
 	
 	public static Set<ModelQuery> randomQueries(int num, int seed) {
-		return ModelWorkloadGenerator.randomQueries(num, seed);
+		return ModelWorkloadGenerator.randomQueries(num, seed, (new QueryTimePredictor()).QUERY_TYPES);
 		
 	}
 	

@@ -29,4 +29,8 @@ public interface ModelSLA {
 	public default boolean isMonotonicIncreasing() {
 		return false;
 	}
+	
+	public default int recommendedWorkloadSizeForSpeed() {
+		return 9;
+	}
 }

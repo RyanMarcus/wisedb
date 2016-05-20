@@ -72,10 +72,6 @@ public class MaxLatencySLA implements TightenableSLA {
 		return new MaxLatencySLA(latency - amt, penalty);
 	}
 	
-	@Override
-	public String toString() {
-		return "[Bin packing SLA: " + latency + "]";
-	}
 
 	@Override
 	public boolean isMonotonicIncreasing() {

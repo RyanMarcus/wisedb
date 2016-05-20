@@ -33,17 +33,17 @@ public enum VMType {
 	public int getCost() {
 		switch (this) {
 		case C4_LARGE:
-			return 116;
+			return 1160;
 		case C4_XLARGE:
-			return 232;
+			return 2320;
 		case M3_LARGE:
-			return 140;
+			return 1400;
 		case M3_MEDIUM:
-			return 70;
+			return 700;
 		case T2_MEDIUM:
-			return 52;
+			return 520;
 		case T2_SMALL:
-			return 26;
+			return 260;
 		case UNIT:
 			return 1000*60*60; // costs 1 per milisecond
 		default:

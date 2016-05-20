@@ -35,10 +35,8 @@ import edu.brandeis.wisedb.cost.QueryTimePredictor;
  *
  */
 public class WorkloadSpecification {
-	private final Map<Integer, Map<VMType, Integer>> latencyData;
-	private final Map<Integer, Map<VMType, Integer>> ioData;
-	private final VMType[] vmTypeData;
 	private final ModelSLA sla;
+	private final QueryTimePredictor qtp;
 	
 	/**
 	 * Construct a new workload specification.
@@ -55,30 +53,31 @@ public class WorkloadSpecification {
 			ModelSLA sla) {
 		
 		
-		this.latencyData = latencyData;
-		this.ioData = ioData;
-		this.vmTypeData = vmTypeData;
+		this.sla = sla;		
+		this.qtp = new QueryTimePredictor(latencyData, ioData, vmTypeData);
+	}
+	
+	
+	
+	/**
+	 * Construct a workload specification based on the 10 TPC-H templates used in
+	 * the paper.
+	 * 
+	 * @param vmTypeData the VM types to use
+	 * @param sla the SLA
+	 */
+	public WorkloadSpecification(VMType[] vmTypeData, ModelSLA sla) {
+		qtp = new QueryTimePredictor(vmTypeData);
 		this.sla = sla;
 	}
 	
-	public Map<Integer, Map<VMType, Integer>> getLatencyData() {
-		return latencyData;
-	}
-	
-	public Map<Integer, Map<VMType, Integer>> getIoData() {
-		return ioData;
-	}
-	
-	public VMType[] getVmTypeData() {
-		return vmTypeData;
-	}
 	
 	public ModelSLA getSLA() {
 		return sla;
 	}
 	
 	public QueryTimePredictor getQueryTimePredictor() {
-		return new QueryTimePredictor(latencyData, ioData, vmTypeData);
+		return qtp;
 	}
 	
 	

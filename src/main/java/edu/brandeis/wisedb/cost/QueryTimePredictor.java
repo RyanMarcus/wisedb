@@ -113,6 +113,7 @@ public class QueryTimePredictor {
 			e.printStackTrace();
 		}
 
+		QUERY_TYPES = new int[] {6, 3, 10, 5, 18};//{18, 5, 14, 4, 6};
 
 	}
 
@@ -166,11 +167,10 @@ public class QueryTimePredictor {
 	
 	public static void main(String[] args) {
 		QueryTimePredictor qtp = new QueryTimePredictor();
-		for (int i = 0; i < 20; i++) {
-
+		for (Integer i : qtp.QUERY_TYPES) {
 			ModelVM vm = new ModelVM(VMType.T2_MEDIUM);
 			ModelQuery q = new ModelQuery(i);
-			int time = qtp.predict(q, vm)/1000;
+			int time = qtp.predict(q, vm);
 			int ios = qtp.predictIO(q, vm);
 			System.out.println(i + ", " + time + " (" + ios + " IOs)");
 

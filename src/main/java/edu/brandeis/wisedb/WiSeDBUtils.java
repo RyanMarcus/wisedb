@@ -100,5 +100,10 @@ public class WiSeDBUtils {
 		 return SchedulerUtils.schedule(trainingData, wf, toSched);
 		
 	}
+
+
+	public static List<Action> doPlacement(InputStream training, WorkloadSpecification wf, Set<ModelQuery> workload) {
+		return SchedulerUtils.schedule(training, wf, workload);
+	}
 	
 }

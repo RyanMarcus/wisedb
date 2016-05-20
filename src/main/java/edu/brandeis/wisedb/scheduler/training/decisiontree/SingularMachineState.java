@@ -103,7 +103,7 @@ public class SingularMachineState extends State {
 		for (Integer i : qtp.QUERY_TYPES) {
 			Optional<ModelQuery> candidate = unassigned.stream()
 					.filter(q -> q.getType() == i)
-					.max((a, b) -> qtp.predict(a, getLastVM()) - qtp.predict(b, getLastVM()));
+					.findAny();
 
 			if (!candidate.isPresent())
 				continue;
@@ -310,8 +310,8 @@ public class SingularMachineState extends State {
 	public void noteBValue(int b) {
 		bValue = b;
 	}
-	
-	
+
+
 	
 
 	

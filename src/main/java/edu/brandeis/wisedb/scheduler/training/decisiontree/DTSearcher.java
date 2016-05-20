@@ -126,7 +126,7 @@ public class DTSearcher implements GraphSearcher {
 		applyLoop: while (!start.isGoalState()) {
 			log.fine("Current state: " + start);
 
-
+			
 			SortedMap<String, String> features = start.getFeatures();
 			Instance toClassify = new Instance(attributes.length);
 			toClassify.setDataset(wekaDataSet);

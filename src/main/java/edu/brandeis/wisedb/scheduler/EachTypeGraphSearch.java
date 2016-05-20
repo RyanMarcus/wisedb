@@ -17,7 +17,7 @@
 // along with WiSeDB.  If not, see <http://www.gnu.org/licenses/>.
 // 
 // { end copyright } 
- 
+
 
 package edu.brandeis.wisedb.scheduler;
 
@@ -28,19 +28,15 @@ import java.util.List;
 import java.util.Set;
 
 import edu.brandeis.wisedb.cost.ModelQuery;
-import edu.brandeis.wisedb.cost.ModelSLA;
 import edu.brandeis.wisedb.cost.ModelVM;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
-import edu.brandeis.wisedb.scheduler.training.decisiontree.SingularMachineState;
 
 public class EachTypeGraphSearch implements GraphSearcher {
 
 	private QueryTimePredictor qtp;
-	private ModelSLA sla;
 
-	public EachTypeGraphSearch(QueryTimePredictor qtp, ModelSLA sla) {
+	public EachTypeGraphSearch(QueryTimePredictor qtp) {
 		this.qtp = qtp;
-		this.sla = sla;
 	}
 
 	@Override
@@ -63,18 +59,27 @@ public class EachTypeGraphSearch implements GraphSearcher {
 						break;
 					}
 				}
-				
+
 				if (toAdd == null)
 					continue;
-				
+
 				unassigned.remove(toAdd);
 				vms.getLast().addQuery(toAdd);
 			}
-			
+
 		}
-		
-		SingularMachineState sms = new SingularMachineState(vms, unassigned, qtp, sla);
-		return sms.toActions(qtp, sla);
+
+		// now construct a sequence of actions that will get us where we need to go
+		List<Action> toR = new LinkedList<Action>();
+		for (ModelVM vm : vms) {
+			toR.add(new StartNewVMAction(vm));
+			for (ModelQuery q : vm.getQueries()) {
+				toR.add(new AssignQueryAction(q, vm));
+			}
+		}
+
+		return toR;
+
 
 
 	}

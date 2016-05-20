@@ -56,7 +56,7 @@ public class Trainer implements AutoCloseable{
 
 	private ModelSLA sla;
 
-	public static int numThreads = 1;
+	public static int numThreads = 2;
 
 	private QueryTimePredictor qtp;
 	private Collection<Action> trainingData;
@@ -216,8 +216,6 @@ public class Trainer implements AutoCloseable{
 
 
 				count.incrementAndGet();
-				//				if (at % 10 == 0)
-				//log.info(at + " / " + max);
 			} catch (Exception e) {
 				System.err.println("Error during training!");
 				e.printStackTrace();

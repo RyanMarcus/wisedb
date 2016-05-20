@@ -71,5 +71,9 @@ public class AverageLatencyModelSLA implements TightenableSLA {
 		return new AverageLatencyModelSLA(latency - amt, penalty);
 	}
 	
+	public int recommendedWorkloadSizeForSpeed() {
+		return 7;
+	}
+	
 
 }

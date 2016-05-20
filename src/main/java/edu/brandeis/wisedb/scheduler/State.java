@@ -44,10 +44,6 @@ public abstract class State implements Cloneable {
 	private QueryTimePredictor qtp;
 
 
-	
-
-
-
 
 	public State(ModelSLA sla, QueryTimePredictor qtp) {
 		this.sla = sla;
@@ -143,8 +139,12 @@ public abstract class State implements Cloneable {
 		return sb.toString();
 	}
 
+	
+	
 	@Override
 	public boolean equals(Object other) {
+		
+		
 		if (!(other instanceof State)) {
 			return false;
 		}
@@ -164,18 +164,9 @@ public abstract class State implements Cloneable {
 
 	@Override
 	public int hashCode() {
-		int toR = 0;
-		for (ModelVM vm : getVMs()) {
-			toR ^= vm.hashCode();
-		}
-
-		for (ModelQuery q : getUnassignedQueries()) {
-			toR ^= q.getType();
-		}
-		
-		
-		return toR;
+		return (997 * getVMs().hashCode()) ^ (991 * getUnassignedQueries().hashCode());
 	}
+
 
 //	private boolean isOrderRelevant(QueryTimePredictor qtp, ModelSLA sla) {
 //		// test to see if the order of the queries really matter.
