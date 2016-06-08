@@ -45,6 +45,9 @@ import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
  */
 public class WiSeDBUtils {
 
+	// hide the default constructor
+	private WiSeDBUtils() { }
+	
 	/**
 	 * Constructs a training dataset (to train a decision tree model) from the given
 	 * workload specification (containing query templates and an SLA).
