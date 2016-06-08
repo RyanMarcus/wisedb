@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import edu.brandeis.wisedb.AdvisorAction;
+import edu.brandeis.wisedb.AdvisorActionAssign;
+import edu.brandeis.wisedb.AdvisorActionProvision;
+import edu.brandeis.wisedb.WorkloadSpecification;
 import edu.brandeis.wisedb.cost.Cost;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.ModelSLA;
@@ -33,6 +37,7 @@ import edu.brandeis.wisedb.cost.ModelVM;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
 import edu.brandeis.wisedb.scheduler.Action;
 import edu.brandeis.wisedb.scheduler.AssignQueryAction;
+import edu.brandeis.wisedb.scheduler.StartNewVMAction;
 import edu.brandeis.wisedb.scheduler.State;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.SingularMachineState;
 
@@ -98,6 +103,35 @@ public class CostModelUtil {
 		
 	}
 	
+	private static List<Action> convertFromAdvisorActions(List<AdvisorAction> actions) {
+		List<Action> toR = new LinkedList<Action>();
+		ModelVM last = null;
+		
+		for (AdvisorAction a : actions) {
+			if (a instanceof AdvisorActionProvision) {
+				AdvisorActionProvision prov = (AdvisorActionProvision) a;
+				StartNewVMAction toAdd = new StartNewVMAction(prov.getVMTypeToProvision());
+				last = toAdd.getVM();
+				toR.add(toAdd);
+				continue;
+			}
+			
+			if (a instanceof AdvisorActionAssign) {
+				AdvisorActionAssign assign = (AdvisorActionAssign) a;
+				Action toAdd = new AssignQueryAction(new ModelQuery(assign.getQueryTypeToAssign()), last);
+				toR.add(toAdd);
+				continue;
+			}
+			
+			throw new RuntimeException("Unknown advisor action encountered: " + a);
+		}
+		
+		return toR;
+	}
+	
+	public static int getCostForPlan(WorkloadSpecification wf, List<AdvisorAction> actions) {
+		return getCostForPlan(convertFromAdvisorActions(actions), wf.getSLA(), wf.getQueryTimePredictor());
+	}
 	
 	public static int getCostForPlan(List<Action> actions, ModelSLA sla) {
 		return getCostForPlan(getQueriesFromActions(actions), actions, sla);

@@ -32,6 +32,10 @@ public class StartNewVMAction extends Action {
 		toStart = t;
 	}
 	
+	public StartNewVMAction(VMType t) {
+		this(new ModelVM(t));
+	}
+	
 	public StartNewVMAction(ModelVM t, State appliedTo) {
 		this(t);
 		this.stateAppliedTo = appliedTo;

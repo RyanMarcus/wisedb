@@ -17,7 +17,7 @@
 // along with WiSeDB.  If not, see <http://www.gnu.org/licenses/>.
 // 
 // { end copyright } 
- 
+
 
 package edu.brandeis.wisedb;
 
@@ -33,7 +33,9 @@ import java.util.stream.IntStream;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
 import edu.brandeis.wisedb.scheduler.Action;
+import edu.brandeis.wisedb.scheduler.AssignQueryAction;
 import edu.brandeis.wisedb.scheduler.SchedulerUtils;
+import edu.brandeis.wisedb.scheduler.StartNewVMAction;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 
 /**
@@ -43,7 +45,7 @@ import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
  *
  */
 public class WiSeDBUtils {
-	
+
 	/**
 	 * Constructs a training dataset (to train a decision tree model) from the given
 	 * workload specification (containing query templates and an SLA).
@@ -61,25 +63,25 @@ public class WiSeDBUtils {
 			WorkloadSpecification wf,
 			int trainingSetSize,
 			int numQueriesPerWorkload) {
-		
+
 		QueryTimePredictor qtp = wf.getQueryTimePredictor();
-		
+
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		PrintWriter pw = new PrintWriter(bos);
-		
-		
+
+
 		Trainer t = new Trainer(qtp, pw, wf.getSLA());
 		t.train(trainingSetSize, numQueriesPerWorkload);
 		t.close();
-		
+
 		return bos.toString();
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Given training data, a workload specification, and a map indicating how many queries
-	 * of each type are in a workload, returns a set of actions that can be performed to schedule
+	 * of each type are in a workload, returns a list of actions that can be performed to schedule
 	 * the workload.
 	 * 
 	 * @param trainingData the training data, produced from constructTrainingData
@@ -87,23 +89,47 @@ public class WiSeDBUtils {
 	 * @param queryFrequencies a map where the keys are the query IDs and the values are the frequency of the query inside the workload
 	 * @return actions to schedule the workload
 	 */
-	public static List<Action> doPlacement(
+	public static List<AdvisorAction> doPlacement(
 			InputStream trainingData, 
 			WorkloadSpecification wf,
 			Map<Integer, Integer> queryFrequencies) {
-		 
-		
-		 Set<ModelQuery> toSched = queryFrequencies.entrySet().stream()
-		.flatMap(e -> IntStream.range(0, e.getValue()).mapToObj(i -> new ModelQuery(e.getKey())))
-		.collect(Collectors.toSet());
-		 
-		 return SchedulerUtils.schedule(trainingData, wf, toSched);
-		
+
+
+		Set<ModelQuery> toSched = queryFrequencies.entrySet().stream()
+				.flatMap(e -> IntStream.range(0, e.getValue()).mapToObj(i -> new ModelQuery(e.getKey())))
+				.collect(Collectors.toSet());
+
+		return SchedulerUtils.schedule(trainingData, wf, toSched)
+				.stream().map(WiSeDBUtils::convertToAdvisorAction)
+				.collect(Collectors.toList());
+
 	}
 
 
-	public static List<Action> doPlacement(InputStream training, WorkloadSpecification wf, Set<ModelQuery> workload) {
-		return SchedulerUtils.schedule(training, wf, workload);
+	/**
+	 * Given training data, a workload specification, and a set of ModelQuery objects, 
+	 * this method returns a list of suggested actions to schedule the workload. 
+	 * 
+	 * @param training the training data, produced from constructTrainingData
+	 * @param wf the workload specification
+	 * @param workload a set of model queries representing the workload to schedule
+	 * @return a list of actions to perform to schedule the workload
+	 */
+	public static List<AdvisorAction> doPlacement(InputStream training, WorkloadSpecification wf, Set<ModelQuery> workload) {
+		return SchedulerUtils.schedule(training, wf, workload)
+				.stream().map(WiSeDBUtils::convertToAdvisorAction)
+				.collect(Collectors.toList());
 	}
-	
+
+	private static AdvisorAction convertToAdvisorAction(Action a) {
+		if (a instanceof AssignQueryAction)
+			return new AdvisorActionAssign(((AssignQueryAction)a).getQuery().getType());
+
+		if (a instanceof StartNewVMAction)
+			return new AdvisorActionProvision(((StartNewVMAction)a).getType());
+
+		throw new RuntimeException("Got unexpected action in convertToAdvisorAction: " + a);
+
+	}
+
 }

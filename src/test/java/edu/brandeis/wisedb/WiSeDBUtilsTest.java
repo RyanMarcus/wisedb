@@ -40,7 +40,6 @@ import edu.brandeis.wisedb.cost.sla.AverageLatencyModelSLA;
 import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
 import edu.brandeis.wisedb.cost.sla.PerQuerySLA;
 import edu.brandeis.wisedb.cost.sla.PercentSLA;
-import edu.brandeis.wisedb.scheduler.Action;
 import edu.brandeis.wisedb.scheduler.FirstFitDecreasingGraphSearch;
 import edu.brandeis.wisedb.scheduler.GraphSearcher;
 import edu.brandeis.wisedb.scheduler.PackNGraphSearch;
@@ -94,11 +93,11 @@ public class WiSeDBUtilsTest {
 		
 		ByteArrayInputStream bis = new ByteArrayInputStream(training.getBytes());
 		
-		List<Action> a = WiSeDBUtils.doPlacement(bis, wf, queryFreqs);
+		List<AdvisorAction> a = WiSeDBUtils.doPlacement(bis, wf, queryFreqs);
 	
 		System.out.println(a);
 		
-		int cost = CostModelUtil.getCostForPlan(a, wf.getSLA(), wf.getQueryTimePredictor());
+		int cost = CostModelUtil.getCostForPlan(wf, a);
 		
 		assertEquals(32, cost);
 	}
@@ -155,7 +154,7 @@ public class WiSeDBUtilsTest {
 			// not exactly reproducing: WiSeDBUtils does sanity checks on the
 			// schedules produced.
 			ByteArrayInputStream bis = new ByteArrayInputStream(training[i].getBytes());
-			dt[i] = CostModelUtil.getCostForPlan(WiSeDBUtils.doPlacement(bis, ws[i], workload), ws[i].getSLA());
+			dt[i] = CostModelUtil.getCostForPlan(ws[i], WiSeDBUtils.doPlacement(bis, ws[i], workload));
 		}
 		
 
