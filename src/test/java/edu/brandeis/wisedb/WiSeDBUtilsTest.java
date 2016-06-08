@@ -97,7 +97,7 @@ public class WiSeDBUtilsTest {
 	
 		System.out.println(a);
 		
-		int cost = CostModelUtil.getCostForPlan(wf, a);
+		int cost = CostUtils.getCostForPlan(wf, a);
 		
 		assertEquals(32, cost);
 	}
@@ -154,7 +154,7 @@ public class WiSeDBUtilsTest {
 			// not exactly reproducing: WiSeDBUtils does sanity checks on the
 			// schedules produced.
 			ByteArrayInputStream bis = new ByteArrayInputStream(training[i].getBytes());
-			dt[i] = CostModelUtil.getCostForPlan(ws[i], WiSeDBUtils.doPlacement(bis, ws[i], workload));
+			dt[i] = CostUtils.getCostForPlan(ws[i], WiSeDBUtils.doPlacement(bis, ws[i], workload));
 		}
 		
 

@@ -19,7 +19,7 @@
 			<comments>GNU GPLv3</comments>
 		</license>
 	</licenses>
-	
+
 	<dependencies>
 
 		<dependency>
@@ -78,6 +78,19 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.5.1</version>
+				<dependencies>
+					<dependency><!-- add support for ssh/scp -->
+						<groupId>org.apache.maven.wagon</groupId>
+						<artifactId>wagon-ssh</artifactId>
+						<version>1.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -88,11 +101,19 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.10.3</version>
 				<configuration>
-
+					<excludePackageNames>info.rmarcus.*;edu.brandeis.wisedb.aws;edu.brandeis.wisedb.scheduler;</excludePackageNames>
 				</configuration>
 			</plugin>
 		</plugins>
 
 	</reporting>
+
+
+	<distributionManagement>
+		<site>
+			<id>cs.brandeis.edu</id>
+			<url>scp://rcmarcus@diadem.cs.brandeis.edu/home/l/rcmarcus/.www/wisedb</url>
+		</site>
+	</distributionManagement>
 
 </project>
