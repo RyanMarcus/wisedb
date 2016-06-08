@@ -16,6 +16,10 @@ import edu.brandeis.wisedb.scheduler.training.CostModelUtil;
  *
  */
 public class CostUtils {
+	
+	// hide default constructor
+	private CostUtils() {}
+	
 	private static List<Action> convertFromAdvisorActions(List<AdvisorAction> actions) {
 		List<Action> toR = new LinkedList<Action>();
 		ModelVM last = null;
