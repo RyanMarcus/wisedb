@@ -2,4 +2,4 @@
 /bin/
 *.class
 *~
-
+dependency-reduced-pom.xml
