@@ -12,6 +12,14 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 
+	<licenses>
+		<license>
+			<name>GNU GENERAL PUBLIC LICENSE 3.0</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+			<comments>GNU GPLv3</comments>
+		</license>
+	</licenses>
+	
 	<dependencies>
 
 		<dependency>
