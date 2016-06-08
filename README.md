@@ -9,6 +9,7 @@ Marcus, Ryan, and Olga Papaemmanouil. "[Workload Management for Cloud Databases 
 
 Marcus, Ryan, and Olga Papaemmanouil. "[WiSeDB: A Learning-based Workload Management Advisor for Cloud Databases.](http://arxiv.org/abs/1601.08221)" arXiv preprint arXiv:1601.08221 (technical report, 2016).
 
+Detailed API documentation can be found [at the Maven-generated site hosted by Brandeis](http://cs.brandeis.edu/~rcmarcus/wisedb/).
 
 
 ## What's it do?
