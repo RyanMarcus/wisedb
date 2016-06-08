@@ -7,7 +7,6 @@ package edu.brandeis.wisedb;
  * AdvisorActionAssign action represents assigning a query of a particular type to
  * the most recently provisioned VM.
  * 
- * @author "Ryan Marcus <ryan@cs.brandeis.edu>"
  *
  */
 public class AdvisorAction {

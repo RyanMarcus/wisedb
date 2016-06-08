@@ -26,7 +26,6 @@ import java.util.ArrayList;
  * "matching" is based on the compareTo method.
  * 
  * @author Mark Allen Weiss
- * @see PriorityQueue.Position
  */
 public class PairingHeap<AnyType extends Comparable<? super AnyType>> {
 	/**
@@ -74,8 +73,6 @@ public class PairingHeap<AnyType extends Comparable<? super AnyType>> {
 	 * Find the smallest item in the priority queue.
 	 * 
 	 * @return the smallest item.
-	 * @throws UnderflowException
-	 *             if pairing heap is empty.
 	 */
 	public AnyType findMin() {
 		if (isEmpty())
@@ -87,8 +84,6 @@ public class PairingHeap<AnyType extends Comparable<? super AnyType>> {
 	 * Remove the smallest item from the priority queue.
 	 * 
 	 * @return the smallest item.
-	 * @throws UnderflowException
-	 *             if pairing heap is empty.
 	 */
 	public AnyType deleteMin() {
 		if (isEmpty())

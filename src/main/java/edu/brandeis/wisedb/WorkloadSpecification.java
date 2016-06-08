@@ -31,7 +31,6 @@ import edu.brandeis.wisedb.cost.QueryTimePredictor;
  * A class representing a workload specification, which includes
  * a set of query templates and an SLA. 
  * 
- * @author "Ryan Marcus <rcmarcus@brandeis.edu>"
  *
  */
 public class WorkloadSpecification {
@@ -41,7 +40,9 @@ public class WorkloadSpecification {
 	/**
 	 * Construct a new workload specification.
 	 * 
-	 * @param latencyData a map from Int -> Map<VMType, Integer>, where the int is a query type, and the second map (<VMType, Integer>) gives the latency of the query on that VM type.
+	 * @param latencyData a map from Int to Map of VMType to Integer, 
+	 *					  where the int is a query type, and the second map (VMType to Integer) 
+	 *                    gives the latency of the query on that VM type.
 	 * @param ioData a similar map with the required number of IOs
 	 * @param vmTypeData an array of VM types usable for this workload
 	 * @param sla the SLA 

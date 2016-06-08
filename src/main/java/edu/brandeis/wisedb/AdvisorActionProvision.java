@@ -5,7 +5,6 @@ import edu.brandeis.wisedb.aws.VMType;
 /**
  * This action represents provisioning a new VM of a certain type.
  * 
- * @author "Ryan Marcus <ryan@cs.brandeis.edu>"
  *
  */
 public class AdvisorActionProvision extends AdvisorAction {

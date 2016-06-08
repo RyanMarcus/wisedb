@@ -110,11 +110,7 @@ public abstract class State implements Cloneable {
 
 	
 
-	/**
-	 * Notes the current B value, if there is one. A state
-	 * should optionally adjust its features accordingly.
-	 * @param b
-	 */
+	
 	public abstract void noteBValue(int b);
 
 	@Override

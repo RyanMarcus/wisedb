@@ -41,7 +41,6 @@ import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 /**
  * A utility class that wraps the user-facing features of WiSeDB
  * 
- * @author "Ryan Marcus <rcmarcus@brandeis.edu>"
  *
  */
 public class WiSeDBUtils {
@@ -54,9 +53,9 @@ public class WiSeDBUtils {
 	 * numQueriesPerWorkload random queries. trainingSetSize should be large (say 2000)
 	 * and numQueriesPerWorkload should be small (8 - 12).
 	 * 
-	 * @param wf
-	 * @param trainingSetSize
-	 * @param numQueriesPerWorkload
+	 * @param wf the workload specification
+	 * @param trainingSetSize the number of sample workloads to generate
+	 * @param numQueriesPerWorkload the size of each training workload
 	 * @return the training data, as a string
 	 */
 	public static String constructTrainingData(

@@ -4,7 +4,6 @@ package edu.brandeis.wisedb;
  * This action represents assigning a query of a particular template
  * to the most recenetly provisioned VM.
  * 
- * @author "Ryan Marcus <ryan@cs.brandeis.edu>"
  *
  */
 public class AdvisorActionAssign extends AdvisorAction {
