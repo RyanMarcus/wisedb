@@ -76,6 +76,17 @@ public class WiSeDBUtils {
 		return bos.toString();
 
 	}
+	
+	/**
+	 * Sets the number of threads that will be used for training
+	 * @param threads thread count
+	 */
+	public static void setThreadCountForTraining(int threads) {
+		if (threads <= 0)
+			throw new IllegalArgumentException("Number of threads must be greater than zero!");
+		
+		Trainer.numThreads = threads;
+	}
 
 
 	/**

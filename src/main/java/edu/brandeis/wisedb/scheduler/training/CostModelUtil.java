@@ -38,7 +38,6 @@ import edu.brandeis.wisedb.scheduler.training.decisiontree.SingularMachineState;
 
 public class CostModelUtil {
 	
-	public static QueryTimePredictor qtp = new QueryTimePredictor();
 	
 	public static int getCostForPlan(Set<ModelQuery> queries, List<Action> actions, ModelSLA sla) {
 		return getDetailedCostForPlan(queries, actions, sla).getTotalCost();
@@ -55,6 +54,7 @@ public class CostModelUtil {
 	}
 	
 	public static Cost getDetailedCostForPlan(Set<ModelQuery> queries, List<Action> actions, ModelSLA sla) {
+		QueryTimePredictor qtp = new QueryTimePredictor();
 		SingularMachineState s = new SingularMachineState(new LinkedList<ModelVM>(), queries, qtp, sla);
 		for (Action a : actions) {
 			s.applyAction(a);
@@ -63,6 +63,7 @@ public class CostModelUtil {
 	}
 	
 	public static State getFinalState(Set<ModelQuery> queries, List<Action> actions, ModelSLA sla) {
+		QueryTimePredictor qtp = new QueryTimePredictor();
 		SingularMachineState s = new SingularMachineState(new LinkedList<ModelVM>(), queries, qtp, sla);
 
 		for (Action a : actions) {
@@ -88,6 +89,7 @@ public class CostModelUtil {
 	}
 	
 	public static boolean validate(Set<ModelQuery> queries, List<Action> actions, ModelSLA sla) {
+		QueryTimePredictor qtp = new QueryTimePredictor();
 		SingularMachineState s = new SingularMachineState(new LinkedList<ModelVM>(), queries, qtp, sla);
 		for (Action a : actions) {
 			s.applyAction(a);
