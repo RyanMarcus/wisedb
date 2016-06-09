@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.junit.Test;
 
@@ -49,7 +51,7 @@ import edu.brandeis.wisedb.scheduler.training.ModelWorkloadGenerator;
 public class WiSeDBUtilsTest {
 
 	@Test
-	public void ffdBustingTest() {
+	public void ffdBustingTest() throws InterruptedException, ExecutionException {
 
 		Map<Integer, Map<VMType, Integer>> latency = new HashMap<>();
 		Map<VMType, Integer> forMachine = new HashMap<>();
@@ -84,7 +86,9 @@ public class WiSeDBUtilsTest {
 				new VMType[] { VMType.T2_SMALL },
 				new MaxLatencySLA(60000 + 91000, 1));
 		
-		String training = WiSeDBUtils.constructTrainingData(wf, 500, 8);
+		Future<String> ftraining = WiSeDBUtils.constructTrainingData(wf, 500, 8);
+		
+		String training = ftraining.get();
 		
 		Map<Integer, Integer> queryFreqs = new HashMap<>();
 		queryFreqs.put(1, 2);
@@ -104,7 +108,7 @@ public class WiSeDBUtilsTest {
 	
 	
 	@Test
-	public void reproduce7c() {
+	public void reproduce7c() throws InterruptedException, ExecutionException {
 		// here, we will reproduce graph 7c from the paper.
 		
 		VMType[] types = new VMType[] { VMType.T2_MEDIUM };
@@ -125,6 +129,13 @@ public class WiSeDBUtilsTest {
 					// difference from paper: train on only 500 so we can run the test
 					// faster on older machines with only two threads (instead of 12)
 					return WiSeDBUtils.constructTrainingData(wsp, 500, wsp.getSLA().recommendedWorkloadSizeForSpeed());
+				})
+				.map(f -> {
+					try {
+						return f.get();
+					} catch (Exception e) {
+						throw new RuntimeException("Could not get training data!");
+					}
 				})
 				.toArray(i -> new String[i]);
 				
@@ -175,6 +186,19 @@ public class WiSeDBUtilsTest {
 		
 	}
 	
+	@Test
+	public void cancelTest() throws InterruptedException {
+		WorkloadSpecification wf = new WorkloadSpecification(new VMType[] { VMType.T2_SMALL, VMType.T2_MEDIUM },
+				AverageLatencyModelSLA.tenMinuteSLA());
+		Future<String> toCancel = WiSeDBUtils.constructTrainingData(wf, 5000, 30);
+		
+		Thread.sleep(5000);
+		assertTrue(toCancel.cancel(true));
+		
+		Thread.sleep(1000);
+		
+		assertTrue(toCancel.isCancelled());
+	}
 
 	
 

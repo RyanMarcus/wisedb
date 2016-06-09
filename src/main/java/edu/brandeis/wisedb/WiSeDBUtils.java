@@ -27,6 +27,9 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -47,7 +50,7 @@ public class WiSeDBUtils {
 
 	// hide the default constructor
 	private WiSeDBUtils() { }
-	
+
 	/**
 	 * Constructs a training dataset (to train a decision tree model) from the given
 	 * workload specification (containing query templates and an SLA).
@@ -56,30 +59,39 @@ public class WiSeDBUtils {
 	 * numQueriesPerWorkload random queries. trainingSetSize should be large (say 2000)
 	 * and numQueriesPerWorkload should be small (8 - 12).
 	 * 
+	 * The returned Future object will eventually contain the training data, and it
+	 * can be cancelled, provided one passes the thread interrupt option.
+	 * 
 	 * @param wf the workload specification
 	 * @param trainingSetSize the number of sample workloads to generate
 	 * @param numQueriesPerWorkload the size of each training workload
 	 * @return the training data, as a string
 	 */
-	public static String constructTrainingData(
+	public static Future<String> constructTrainingData(
 			WorkloadSpecification wf,
 			int trainingSetSize,
 			int numQueriesPerWorkload) {
 
-		QueryTimePredictor qtp = wf.getQueryTimePredictor();
+		Callable<String> c = () -> {
+			QueryTimePredictor qtp = wf.getQueryTimePredictor();
 
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		PrintWriter pw = new PrintWriter(bos);
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			PrintWriter pw = new PrintWriter(bos);
 
 
-		Trainer t = new Trainer(qtp, pw, wf.getSLA());
-		t.train(trainingSetSize, numQueriesPerWorkload);
-		t.close();
+			Trainer t = new Trainer(qtp, pw, wf.getSLA());
+			t.train(trainingSetSize, numQueriesPerWorkload);
+			t.close();
 
-		return bos.toString();
+			return bos.toString();
+		};
+		
+		FutureTask<String> ft = new FutureTask<String>(c);
+		(new Thread(ft)).start();
+		return ft;
 
 	}
-	
+
 	/**
 	 * Sets the number of threads that will be used for training
 	 * @param threads thread count
@@ -87,7 +99,7 @@ public class WiSeDBUtils {
 	public static void setThreadCountForTraining(int threads) {
 		if (threads <= 0)
 			throw new IllegalArgumentException("Number of threads must be greater than zero!");
-		
+
 		Trainer.numThreads = threads;
 	}
 
