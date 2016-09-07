@@ -109,7 +109,7 @@ WorkloadSpecification wf = new WorkloadSpecification(
 
 // here, we construct a training set of 5000 workloads of size
 // 10 in order to train our model.
-String training = WiSeDBUtils.constructTrainingData(wf, 5000, 10);
+String training = WiSeDBUtils.constructTrainingData(wf, 5000, 10).get();
 
 // here we build our workload (two instances of each query type)
 Map<Integer, Integer> queryFreqs = new HashMap<>();
@@ -119,7 +119,7 @@ queryFreqs.put(3, 2);
 
 // here we use WiSeDB to get our workload management strategy
 ByteArrayInputStream bis = new ByteArrayInputStream(training.getBytes());
-List<Action> a = WiSeDBUtils.doPlacement(bis, wf, queryFreqs);
+List<AdvisorAction> a = WiSeDBUtils.doPlacement(bis, wf, queryFreqs);
 
 System.out.println(a);
 ```
