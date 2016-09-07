@@ -17,18 +17,22 @@
 // along with WiSeDB.  If not, see <http://www.gnu.org/licenses/>.
 // 
 // { end copyright } 
- 
+
 
 package edu.brandeis.wisedb.scheduler.training.decisiontree;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,7 +68,7 @@ public class Trainer implements AutoCloseable{
 	private boolean haveHeaders = false;
 
 	private ExecutorService tp;
-	
+
 	private PrintWriter out;
 	private String filePath;
 
@@ -122,11 +126,11 @@ public class Trainer implements AutoCloseable{
 
 		for (int i = 0; i < numInstances; i++) {
 			if (qg != null) {
-				tp.submit(new TrainerThread(bruteForceSize, numInstances, qg));
+				tp.submit(new TrainerThread(bruteForceSize, qg));
 				continue;
 			}
 
-			tp.submit(new TrainerThread(bruteForceSize, numInstances, queryTypes));
+			tp.submit(new TrainerThread(bruteForceSize, queryTypes));
 
 		}
 
@@ -146,8 +150,45 @@ public class Trainer implements AutoCloseable{
 
 	}
 
-	
-	
+	public List<String> train(List<Set<ModelQuery>> workloads) {
+		Map<Integer, List<Action>> data = Collections.synchronizedMap(new HashMap<>());
+
+		count = new AtomicInteger(0);
+		tp = Executors.newFixedThreadPool(numThreads);
+
+
+		for (int i = 0; i < workloads.size(); i++) {
+			Set<ModelQuery> wl = workloads.get(i);
+			tp.submit(new TrainerThread(wl.size(), new QueryGenerator() {
+				public Set<ModelQuery> generateQueries(int queries) {
+					return wl;
+				}
+			}, i, data));
+		}
+
+		tp.shutdown();
+		try {
+			tp.awaitTermination(1, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			log.warning("Training interrupted! Saving what we have now...");
+			tp.shutdownNow();
+		}
+
+		List<String> toR = new ArrayList<>(workloads.size());
+		for (int i = 0; i < workloads.size(); i++) {
+			ByteArrayOutputStream bis = new ByteArrayOutputStream();
+			PrintWriter pw = new PrintWriter(bis);
+			haveHeaders = false;
+			printCSV(data.get(i), pw);
+			toR.add(bis.toString());
+		}
+
+		return toR;
+
+	}
+
+
+
 	public void interrupt() {
 		tp.shutdownNow();
 	}
@@ -157,26 +198,33 @@ public class Trainer implements AutoCloseable{
 
 		private int bruteForceSize;
 		private int[] queryTypes;
+		private Map<Integer, List<Action>> m;
+		private int idx;
 
 		private QueryGenerator qg;
 
-		public TrainerThread(int bruteForceSize, int max, int[] queryTypes) {
+		public TrainerThread(int bruteForceSize, int[] queryTypes) {
 			this.bruteForceSize = bruteForceSize;
 			this.queryTypes = queryTypes;
 		}
 
-		public TrainerThread(int bruteForceSize, int max, QueryGenerator qg) {
+		public TrainerThread(int bruteForceSize, QueryGenerator qg) {
 			this.bruteForceSize = bruteForceSize;
 			this.qg = qg;
+
 			this.queryTypes = null;
+		}
+
+		public TrainerThread(int bfSize, QueryGenerator qg, int idx, Map<Integer, List<Action>> m) {
+			this.bruteForceSize = bfSize;
+			this.qg = qg;
+			this.m = m;
+			this.idx = idx;
 		}
 
 		@Override
 		public void run() {
 			try {
-
-
-
 				Set<ModelQuery> workload;
 
 				if (qg != null) {
@@ -200,20 +248,17 @@ public class Trainer implements AutoCloseable{
 				AStarGraphSearch astar = new AStarGraphSearch(h, sla, qtp);
 
 
-
 				List<Action> todo = astar.schedule(workload);
 				if (todo == null) {
 					// failed.
 					return;
 				}
 
-
-
-
-				trainingData.addAll(todo);
-
-
-
+				if (m != null) {
+					m.put(idx, todo);
+				} else {
+					trainingData.addAll(todo);
+				}
 
 				count.incrementAndGet();
 			} catch (Exception e) {
@@ -269,8 +314,10 @@ public class Trainer implements AutoCloseable{
 
 	@Override
 	public void close() {
-		out.flush();
-		out.close();
+		if (out != null) {
+			out.flush();
+			out.close();
+		}
 	}
 
 

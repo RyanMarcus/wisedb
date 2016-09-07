@@ -72,6 +72,18 @@ public class WorkloadSpecification {
 		this.sla = sla;
 	}
 	
+	/**
+	 * Constructs a workload specification using the given query time predictor
+	 * and the given SLA.
+	 * 
+	 * @param qtp the query time predictor to use
+	 * @param sla the SLA for this workload specification
+	 */
+	public WorkloadSpecification(QueryTimePredictor qtp, ModelSLA sla) {
+		this.qtp = qtp;
+		this.sla = sla;
+	}
+	
 	
 	public ModelSLA getSLA() {
 		return sla;

@@ -145,6 +145,32 @@ public class WiSeDBUtils {
 				.stream().map(WiSeDBUtils::convertToAdvisorAction)
 				.collect(Collectors.toList());
 	}
+	
+	/**
+	 * Given a cached model, a workload specification, and a set of ModelQuery objects, 
+	 * this method returns a list of suggested actions to schedule the workload. 
+	 * 
+	 * @param model the cached decision tree model
+	 * @param wf the workload specification
+	 * @param workload a set of model queries representing the workload to schedule
+	 * @return a list of actions to perform to schedule the workload
+	 */
+	public static List<AdvisorAction> doPlacement(WiSeDBCachedModel model, WorkloadSpecification wf, Set<ModelQuery> workload) {
+		return SchedulerUtils.schedule(model.getDT(), wf, workload)
+				.stream().map(WiSeDBUtils::convertToAdvisorAction)
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Generate a cached decision tree model that can be applied quickly over and over again
+	 * (instead of rebuilding the decision tree model from training data each time).
+	 * @param training the training data
+	 * @param wf the workload specification
+	 * @return a black-box object representing the cached DT model
+	 */
+	public static WiSeDBCachedModel getCachedModel(InputStream training, WorkloadSpecification wf) {
+		return new WiSeDBCachedModel(SchedulerUtils.getDTModel(training, wf));
+	}
 
 	private static AdvisorAction convertToAdvisorAction(Action a) {
 		if (a instanceof AssignQueryAction)

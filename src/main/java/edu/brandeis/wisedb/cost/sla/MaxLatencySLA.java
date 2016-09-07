@@ -78,5 +78,10 @@ public class MaxLatencySLA implements TightenableSLA {
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		return "[Max latency: " + (latency - 60000) + "]";
+	}
+	
 	
 }

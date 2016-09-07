@@ -17,7 +17,7 @@
 // along with WiSeDB.  If not, see <http://www.gnu.org/licenses/>.
 // 
 // { end copyright } 
- 
+
 
 package edu.brandeis.wisedb.scheduler;
 
@@ -39,39 +39,43 @@ public class SchedulerUtils {
 	private static final Logger log = Logger.getLogger(AStarGraphSearch.class.getName());
 
 
+	public static DTSearcher getDTModel(InputStream trainingData, WorkloadSpecification wf) {
+		try {
+			return new DTSearcher(trainingData, wf.getQueryTimePredictor(), wf.getSLA());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public static List<Action> schedule(InputStream trainingData, WorkloadSpecification wf, Set<ModelQuery> toSchedule) {
+		return schedule(getDTModel(trainingData, wf), wf, toSchedule);
+	}
+
+	public static List<Action> schedule(DTSearcher dt, WorkloadSpecification wf, Set<ModelQuery> toSchedule) {
 		Set<GraphSearcher> algos = new HashSet<GraphSearcher>();
 
 		final QueryTimePredictor qtp = wf.getQueryTimePredictor();
-		
-		try {
-			DTSearcher dt = new DTSearcher(trainingData, qtp, wf.getSLA());
-			algos.add(dt);
-		} catch (Exception e) {
-			log.info("Could not construct decision tree searcher: " + e.toString());
-		}
-		
+
+		algos.add(dt);
 		algos.add(new FirstFitDecreasingGraphSearch(wf.getSLA(), qtp, false));
 		algos.add(new FirstFitDecreasingGraphSearch(wf.getSLA(), qtp, true));
 		algos.add(new EachTypeGraphSearch(qtp));
-		
-		
+
+
 		Optional<List<Action>> min = algos.stream()
-		.map(gs -> gs.schedule(toSchedule))
-		.min((a, b) -> {
-			int aCost = Math.abs(CostModelUtil.getCostForPlan(toSchedule, a, wf.getSLA(), qtp));
-			int bCost = Math.abs(CostModelUtil.getCostForPlan(toSchedule, b, wf.getSLA(), qtp));
-			
-			return aCost - bCost;
-		});
-		
+				.map(gs -> gs.schedule(toSchedule))
+				.min((a, b) -> {
+					int aCost = Math.abs(CostModelUtil.getCostForPlan(toSchedule, a, wf.getSLA(), qtp));
+					int bCost = Math.abs(CostModelUtil.getCostForPlan(toSchedule, b, wf.getSLA(), qtp));
+
+					return aCost - bCost;
+				});
+
 		if (!min.isPresent()) {
 			log.severe("No searcher could schedule the workload!");
 			return null;
 		}
-		
+
 		return min.get();
-
-
 	}
 }
