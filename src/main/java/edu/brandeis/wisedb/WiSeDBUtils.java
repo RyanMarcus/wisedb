@@ -22,7 +22,9 @@
 
 package edu.brandeis.wisedb;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
@@ -33,6 +35,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import com.amazonaws.util.IOUtils;
 
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
@@ -120,7 +124,6 @@ public class WiSeDBUtils {
 			WorkloadSpecification wf,
 			Map<Integer, Integer> queryFrequencies) {
 
-
 		Set<ModelQuery> toSched = queryFrequencies.entrySet().stream()
 				.flatMap(e -> IntStream.range(0, e.getValue()).mapToObj(i -> new ModelQuery(e.getKey())))
 				.collect(Collectors.toSet());
@@ -156,8 +159,27 @@ public class WiSeDBUtils {
 	 * @param workload a set of model queries representing the workload to schedule
 	 * @return a list of actions to perform to schedule the workload
 	 */
-	public static List<AdvisorAction> doPlacement(WiSeDBCachedModel model, WorkloadSpecification wf, Set<ModelQuery> workload) {
-		return SchedulerUtils.schedule(model.getDT(), wf, workload)
+	public static List<AdvisorAction> doPlacement(WiSeDBCachedModel model, Set<ModelQuery> workload) {
+		return SchedulerUtils.schedule(model.getDT(), model.getWorkloadSpecification(), workload)
+				.stream().map(WiSeDBUtils::convertToAdvisorAction)
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Given a cached model, a workload specification, and a map of query frequencies, 
+	 * this method returns a list of suggested actions to schedule the workload. 
+	 * 
+	 * @param model the cached decision tree model
+	 * @param wf the workload specification
+	 * @param freqs a map of query type to query frequency
+	 * @return a list of actions to perform to schedule the workload
+	 */
+	public static List<AdvisorAction> doPlacement(WiSeDBCachedModel model, Map<Integer, Integer> freqs) {
+		Set<ModelQuery> workload = freqs.entrySet().stream()
+				.flatMap(e -> IntStream.range(0, e.getValue()).mapToObj(i -> new ModelQuery(e.getKey())))
+				.collect(Collectors.toSet());
+		
+		return SchedulerUtils.schedule(model.getDT(), model.getWorkloadSpecification(), workload)
 				.stream().map(WiSeDBUtils::convertToAdvisorAction)
 				.collect(Collectors.toList());
 	}
@@ -170,7 +192,13 @@ public class WiSeDBUtils {
 	 * @return a black-box object representing the cached DT model
 	 */
 	public static WiSeDBCachedModel getCachedModel(InputStream training, WorkloadSpecification wf) {
-		return new WiSeDBCachedModel(SchedulerUtils.getDTModel(training, wf));
+		String s;
+		try {
+			s = IOUtils.toString(training);
+		} catch (IOException e) {
+			return null;
+		}
+		return new WiSeDBCachedModel(SchedulerUtils.getDTModel(new ByteArrayInputStream(s.getBytes()), wf), s, wf);
 	}
 
 	private static AdvisorAction convertToAdvisorAction(Action a) {

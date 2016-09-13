@@ -36,7 +36,6 @@ public class UnassignedQueryTimeHeuristic implements Heuristic {
 	
 	public UnassignedQueryTimeHeuristic(QueryTimePredictor qtp) {
 		this.qtp = qtp;
-
 		vms = qtp.getNewVMs().toArray(new ModelVM[] {});
 	}
 	

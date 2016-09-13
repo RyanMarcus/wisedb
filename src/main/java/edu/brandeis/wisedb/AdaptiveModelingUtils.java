@@ -21,15 +21,19 @@ package edu.brandeis.wisedb;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import edu.brandeis.wisedb.aws.VMType;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.TightenableSLA;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 
 /**
@@ -50,8 +54,8 @@ public class AdaptiveModelingUtils {
 	 * @param numWorkloads the number of training workloads
 	 * @return a list of training data, where the first element is the loosest SLA and the last element is the strictest
 	 */
-	public static List<String> tightenAndRetrain(WorkloadSpecification wf, int increm, int numTightens, int workloadSize, int numWorkloads) {
-		List<String> toR = new ArrayList<>(numTightens + 1);
+	public static List<WiSeDBCachedModel> tightenAndRetrain(WorkloadSpecification wf, int increm, int numTightens, int workloadSize, int numWorkloads) {
+		List<WiSeDBCachedModel> toR = new ArrayList<>(numTightens + 1);
 		List<String> trainingData = new ArrayList<>(numWorkloads);
 
 		if (!(wf.getSLA() instanceof TightenableSLA))
@@ -79,20 +83,18 @@ public class AdaptiveModelingUtils {
 		t.close();
 		log.info("Finished initial training");
 
-		// record the training data into the list
-		toR.add(listToTrainingData(trainingData));
 
 		// figure out what the cost of each workload is under our current model
 		// and SLA
 		log.info("Costing each workload in the initial plan");
 		List<Integer> costs = new ArrayList<>(numWorkloads);
 		WiSeDBCachedModel model = WiSeDBUtils.getCachedModel(
-				new ByteArrayInputStream(toR.get(0).getBytes()), 
+				new ByteArrayInputStream(listToTrainingData(trainingData).getBytes()), 
 				wf);
+		toR.add(model);
 		for (int i = 0; i < numWorkloads; i++) {
 			List<AdvisorAction> sched = WiSeDBUtils.doPlacement(
-					model, 
-					wf, workloads.get(i));
+					model, workloads.get(i));
 
 			costs.add(CostUtils.getCostForPlan(wf, sched));
 		}
@@ -103,15 +105,11 @@ public class AdaptiveModelingUtils {
 					sla.tighten((i+1) * increm));
 			
 			// build a list of indexes for each workload that has a new cost
-			model = WiSeDBUtils.getCachedModel(
-					new ByteArrayInputStream(toR.get(toR.size() - 1).getBytes()), 
-					newWS);
 			List<Integer> changedIndexes = new LinkedList<>();
 			for (int j = 0; j < workloads.size(); j++) {
 				int oldCost = costs.get(j);
 				List<AdvisorAction> sched = WiSeDBUtils.doPlacement(
-						model, 
-						newWS, workloads.get(j));
+						model, workloads.get(j));
 
 				int newCost = CostUtils.getCostForPlan(newWS, sched);
 
@@ -138,16 +136,14 @@ public class AdaptiveModelingUtils {
 				trainingData.set(changedIndexes.get(idxCount), newData.get(idxCount));
 			}
 
-			// record the complete training data
-			toR.add(listToTrainingData(trainingData));
-
 			// update the cost array
 			model = WiSeDBUtils.getCachedModel(
-					new ByteArrayInputStream(toR.get(toR.size() - 1).getBytes()), 
+					new ByteArrayInputStream(listToTrainingData(trainingData).getBytes()), 
 					newWS);
+			toR.add(model);
 			for (Integer idx : changedIndexes) {
 				List<AdvisorAction> sched = WiSeDBUtils.doPlacement(
-						model, newWS, workloads.get(idx));
+						model, workloads.get(idx));
 				int newCost = CostUtils.getCostForPlan(newWS, sched);
 				costs.set(idx, newCost);
 			}
@@ -175,6 +171,10 @@ public class AdaptiveModelingUtils {
 
 //	public static void main(String[] args) {
 //
+//		long t = System.currentTimeMillis();
+//		
+//		WiSeDBUtils.setThreadCountForTraining(4);
+//		
 //		Map<Integer, Map<VMType, Integer>> latency = new HashMap<>();
 //		Map<VMType, Integer> forMachine = new HashMap<>();
 //		forMachine.put(VMType.T2_SMALL, 20000);
@@ -206,10 +206,21 @@ public class AdaptiveModelingUtils {
 //				latency, 
 //				ios, 
 //				new VMType[] { VMType.T2_SMALL },
-//				new MaxLatencySLA(60000 + 95000, 1));
+//				new MaxLatencySLA(60000 + 100000, 1));
 //
-//		AdaptiveModelingUtils.tightenAndRetrain(wf, 1000, 100, 10, 200);
-//
+//		List<WiSeDBCachedModel> models = AdaptiveModelingUtils.tightenAndRetrain(wf, 5000, 10, 9, 250);
+//		
+//		Map<Integer, Integer> freqs = new HashMap<>();
+//		freqs.put(1, 100);
+//		freqs.put(2, 100);
+//		freqs.put(3, 100);
+//		
+//		for (WiSeDBCachedModel model : models) {
+//			System.out.println(CostUtils.getCostForPlan(model.getWorkloadSpecification(),
+//					WiSeDBUtils.doPlacement(model, freqs)));
+//		}
+//		
+//		System.out.println("Time: " + (System.currentTimeMillis() - t));
 //
 //	}
 }

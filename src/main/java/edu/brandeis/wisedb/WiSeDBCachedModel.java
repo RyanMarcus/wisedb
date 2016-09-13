@@ -27,12 +27,24 @@ import edu.brandeis.wisedb.scheduler.training.decisiontree.DTSearcher;
  */
 public class WiSeDBCachedModel {
 	private DTSearcher dt;
+	private String trainingData;
+	private WorkloadSpecification wf;
 		
-	WiSeDBCachedModel(DTSearcher dt) {
+	WiSeDBCachedModel(DTSearcher dt, String trainingData, WorkloadSpecification wf) {
 		this.dt = dt;
+		this.trainingData = trainingData;
+		this.wf = wf;
 	}
 	
 	DTSearcher getDT() {
 		return dt;
+	}
+	
+	public String getTrainingData() {
+		return trainingData;
+	}
+	
+	public WorkloadSpecification getWorkloadSpecification() {
+		return wf;
 	}
 }
