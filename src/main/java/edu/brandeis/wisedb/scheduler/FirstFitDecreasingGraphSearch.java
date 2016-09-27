@@ -108,7 +108,7 @@ public class FirstFitDecreasingGraphSearch implements GraphSearcher {
 	}
 
 	private class QueryComparator implements Comparator<ModelQuery> {
-
+		
 		@Override
 		public int compare(ModelQuery o1, ModelQuery o2) {
 			return qtp.predict(o2, VMType.T2_SMALL) - qtp.predict(o1, VMType.T2_SMALL);

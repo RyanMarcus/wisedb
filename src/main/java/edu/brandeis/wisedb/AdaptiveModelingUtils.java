@@ -21,15 +21,19 @@ package edu.brandeis.wisedb;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import edu.brandeis.wisedb.aws.VMType;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.TightenableSLA;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 
 /**
@@ -99,7 +103,7 @@ public class AdaptiveModelingUtils {
 			// build a new workload spec for the tightened SLA
 			WorkloadSpecification newWS = new WorkloadSpecification(wf.getQueryTimePredictor(),
 					sla.tighten((i+1) * increm));
-			
+
 			// build a list of indexes for each workload that has a new cost
 			List<Integer> changedIndexes = new LinkedList<>();
 			for (int j = 0; j < workloads.size(); j++) {
@@ -165,58 +169,58 @@ public class AdaptiveModelingUtils {
 		return sb.toString();
 	}
 
-//	public static void main(String[] args) {
-//
-//		long t = System.currentTimeMillis();
-//		
-//		WiSeDBUtils.setThreadCountForTraining(4);
-//		
-//		Map<Integer, Map<VMType, Integer>> latency = new HashMap<>();
-//		Map<VMType, Integer> forMachine = new HashMap<>();
-//		forMachine.put(VMType.T2_SMALL, 20000);
-//		latency.put(1, forMachine);
-//
-//		forMachine = new HashMap<>();
-//		forMachine.put(VMType.T2_SMALL, 30000);
-//		latency.put(2, forMachine);
-//
-//		forMachine = new HashMap<>();
-//		forMachine.put(VMType.T2_SMALL, 40000);
-//		latency.put(3, forMachine);
-//
-//
-//		Map<Integer, Map<VMType, Integer>> ios = new HashMap<>();
-//		forMachine = new HashMap<>();
-//		forMachine.put(VMType.T2_SMALL, 10);
-//		ios.put(1, forMachine);
-//
-//		forMachine = new HashMap<>();
-//		forMachine.put(VMType.T2_SMALL, 10);
-//		ios.put(2, forMachine);
-//
-//		forMachine = new HashMap<>();
-//		forMachine.put(VMType.T2_SMALL, 10);
-//		ios.put(3, forMachine);
-//
-//		WorkloadSpecification wf = new WorkloadSpecification(
-//				latency, 
-//				ios, 
-//				new VMType[] { VMType.T2_SMALL },
-//				new MaxLatencySLA(60000 + 100000, 1));
-//
-//		List<WiSeDBCachedModel> models = AdaptiveModelingUtils.tightenAndRetrain(wf, 5000, 10, 9, 250);
-//		
-//		Map<Integer, Integer> freqs = new HashMap<>();
-//		freqs.put(1, 100);
-//		freqs.put(2, 100);
-//		freqs.put(3, 100);
-//		
-//		for (WiSeDBCachedModel model : models) {
-//			System.out.println(CostUtils.getCostForPlan(model.getWorkloadSpecification(),
-//					WiSeDBUtils.doPlacement(model, freqs)));
-//		}
-//		
-//		System.out.println("Time: " + (System.currentTimeMillis() - t));
-//
-//	}
+	public static void main(String[] args) {
+
+		long t = System.currentTimeMillis();
+
+		WiSeDBUtils.setThreadCountForTraining(4);
+
+		Map<Integer, Map<VMType, Integer>> latency = new HashMap<>();
+		Map<VMType, Integer> forMachine = new HashMap<>();
+		forMachine.put(VMType.T2_SMALL, 20000);
+		latency.put(1, forMachine);
+
+		forMachine = new HashMap<>();
+		forMachine.put(VMType.T2_SMALL, 30000);
+		latency.put(2, forMachine);
+
+		forMachine = new HashMap<>();
+		forMachine.put(VMType.T2_SMALL, 40000);
+		latency.put(3, forMachine);
+
+
+		Map<Integer, Map<VMType, Integer>> ios = new HashMap<>();
+		forMachine = new HashMap<>();
+		forMachine.put(VMType.T2_SMALL, 10);
+		ios.put(1, forMachine);
+
+		forMachine = new HashMap<>();
+		forMachine.put(VMType.T2_SMALL, 10);
+		ios.put(2, forMachine);
+
+		forMachine = new HashMap<>();
+		forMachine.put(VMType.T2_SMALL, 10);
+		ios.put(3, forMachine);
+
+		WorkloadSpecification wf = new WorkloadSpecification(
+				latency, 
+				ios, 
+				new VMType[] { VMType.T2_SMALL },
+				new MaxLatencySLA(60000 + 100000, 1));
+
+		List<WiSeDBCachedModel> models = AdaptiveModelingUtils.tightenAndRetrain(wf, 5000, 10, 9, 250);
+
+		Map<Integer, Integer> freqs = new HashMap<>();
+		freqs.put(1, 100);
+		freqs.put(2, 100);
+		freqs.put(3, 100);
+
+		for (WiSeDBCachedModel model : models) {
+			System.out.println(CostUtils.getCostForPlan(model.getWorkloadSpecification(),
+					WiSeDBUtils.doPlacement(model, freqs)));
+		}
+
+		System.out.println("Time: " + (System.currentTimeMillis() - t));
+
+	}
 }

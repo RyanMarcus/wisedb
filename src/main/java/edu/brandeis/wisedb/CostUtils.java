@@ -21,11 +21,13 @@ package edu.brandeis.wisedb;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.ModelVM;
 import edu.brandeis.wisedb.scheduler.Action;
 import edu.brandeis.wisedb.scheduler.AssignQueryAction;
+import edu.brandeis.wisedb.scheduler.GraphSearcher;
 import edu.brandeis.wisedb.scheduler.StartNewVMAction;
 import edu.brandeis.wisedb.scheduler.training.CostModelUtil;
 
@@ -63,6 +65,18 @@ public class CostUtils {
 		}
 		
 		return toR;
+	}
+	
+	/**
+	 * Gets the cost of using a particular heuristic method
+	 * @param gs the graph searcher / method
+	 * @param wf workload spec
+	 * @param mqs model queries
+	 * @return the cost of scheduling the queries with this method
+	 */
+	public static int getCostForSearcher(GraphSearcher gs, WorkloadSpecification wf, Set<ModelQuery> mqs) {
+		List<Action> a = gs.schedule(mqs);
+		return CostModelUtil.getCostForPlan(a, wf.getSLA(), wf.getQueryTimePredictor());
 	}
 	
 	/**

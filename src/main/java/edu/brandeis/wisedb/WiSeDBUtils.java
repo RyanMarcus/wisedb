@@ -200,7 +200,7 @@ public class WiSeDBUtils {
 		}
 		return new WiSeDBCachedModel(SchedulerUtils.getDTModel(new ByteArrayInputStream(s.getBytes()), wf), s, wf);
 	}
-
+	
 	private static AdvisorAction convertToAdvisorAction(Action a) {
 		if (a instanceof AssignQueryAction)
 			return new AdvisorActionAssign(((AssignQueryAction)a).getQuery().getType());
