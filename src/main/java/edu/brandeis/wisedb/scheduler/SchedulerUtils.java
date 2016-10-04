@@ -29,9 +29,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import edu.brandeis.wisedb.WiSeDBUtils;
 import edu.brandeis.wisedb.WorkloadSpecification;
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.QueryTimePredictor;
+import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
 import edu.brandeis.wisedb.scheduler.training.CostModelUtil;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.DTSearcher;
 
@@ -60,7 +62,11 @@ public class SchedulerUtils {
 		algos.add(dt);
 		algos.add(new FirstFitDecreasingGraphSearch(wf.getSLA(), qtp, false));
 		algos.add(new FirstFitDecreasingGraphSearch(wf.getSLA(), qtp, true));
+		algos.add(new PackNGraphSearch(9, qtp, wf.getSLA()));
 		algos.add(new EachTypeGraphSearch(qtp));
+		if (wf.getSLA() instanceof MaxLatencySLA && WiSeDBUtils.GLPSOL_PATH != null) {
+			algos.add(new MLPGraphSearcher((MaxLatencySLA) wf.getSLA(), qtp, WiSeDBUtils.GLPSOL_PATH));
+		}
 
 
 		Optional<List<Action>> min = algos.stream()

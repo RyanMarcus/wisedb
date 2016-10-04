@@ -111,6 +111,7 @@ public class FirstFitDecreasingGraphSearch implements GraphSearcher {
 		
 		@Override
 		public int compare(ModelQuery o1, ModelQuery o2) {
+			// TODO shouldn't be using T2_SMALL here!!
 			return qtp.predict(o2, VMType.T2_SMALL) - qtp.predict(o1, VMType.T2_SMALL);
 		}
 

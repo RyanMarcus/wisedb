@@ -63,6 +63,7 @@ public class QueryTimePredictor {
 	public QueryTimePredictor(Map<Integer, Map<VMType, Integer>> latency, Map<Integer, Map<VMType, Integer>> ioData) {
 		this.latencyData = latency;
 		this.ioData = ioData;
+		this.types = latency.values().iterator().next().keySet().toArray(new VMType[] {});
 		
 		QUERY_TYPES = this.latencyData.keySet()
 				.stream()
@@ -123,8 +124,6 @@ public class QueryTimePredictor {
 	}
 
 	public int predictIO(ModelQuery q, ModelVM vm) {
-	
-
 		if (!ioData.containsKey(q.getType()))
 			return Integer.MAX_VALUE;
 		return ioData.get(q.getType()).get(vm.getType());

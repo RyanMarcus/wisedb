@@ -100,6 +100,9 @@ public class WiSeDBUtilsTest {
 		
 		List<AdvisorAction> a = WiSeDBUtils.doPlacement(bis, wf, queryFreqs);
 	
+		GraphSearcher ffdSearch = new FirstFitDecreasingGraphSearch(wf.getSLA(), wf.getQueryTimePredictor(), false);
+		System.out.println(CostUtils.getCostForSearcher(ffdSearch, wf, queryFreqs));
+		
 		System.out.println(a);
 		
 		int cost = CostUtils.getCostForPlan(wf, a);

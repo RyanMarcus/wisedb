@@ -21,7 +21,10 @@ package edu.brandeis.wisedb;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import edu.brandeis.wisedb.cost.ModelQuery;
 import edu.brandeis.wisedb.cost.ModelVM;
@@ -74,9 +77,13 @@ public class CostUtils {
 	 * @param mqs model queries
 	 * @return the cost of scheduling the queries with this method
 	 */
-	public static int getCostForSearcher(GraphSearcher gs, WorkloadSpecification wf, Set<ModelQuery> mqs) {
-		List<Action> a = gs.schedule(mqs);
-		return CostModelUtil.getCostForPlan(a, wf.getSLA(), wf.getQueryTimePredictor());
+	public static int getCostForSearcher(GraphSearcher gs, WorkloadSpecification wf, Map<Integer, Integer> queryFreqs) {
+		Set<ModelQuery> workload = queryFreqs.entrySet().stream()
+				.flatMap(e -> IntStream.range(0, e.getValue()).mapToObj(i -> new ModelQuery(e.getKey())))
+				.collect(Collectors.toSet());
+		
+		List<Action> a = gs.schedule(workload);
+		return CostModelUtil.getCostForPlan(workload, a, wf.getSLA(), wf.getQueryTimePredictor());
 	}
 	
 	/**

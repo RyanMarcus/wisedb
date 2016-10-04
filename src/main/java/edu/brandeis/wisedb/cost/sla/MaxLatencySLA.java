@@ -38,6 +38,10 @@ public class MaxLatencySLA implements TightenableSLA {
 		this.penalty = penalty;
 	}
 	
+	public int getLatency() {
+		return latency;
+	}
+	
 	@Override
 	public int calculatePenalty(Map<ModelQuery, Integer> latencies) {
 		return latencies.values().stream().mapToInt((Integer i) -> {
