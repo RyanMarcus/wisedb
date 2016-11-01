@@ -25,15 +25,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import edu.brandeis.wisedb.aws.VMType;
 import edu.brandeis.wisedb.cost.ModelQuery;
-import edu.brandeis.wisedb.cost.TightenableSLA;
 import edu.brandeis.wisedb.cost.sla.MaxLatencySLA;
+import edu.brandeis.wisedb.cost.TightenableSLA;
 import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 
 /**
@@ -58,14 +58,15 @@ public class AdaptiveModelingUtils {
 		List<WiSeDBCachedModel> toR = new ArrayList<>(numTightens + 1);
 		List<String> trainingData = new ArrayList<>(numWorkloads);
 
-		if (!(wf.getSLA() instanceof TightenableSLA))
+		if (!(wf.getSLA() instanceof TightenableSLA)) {
 			throw new WiSeDBRuntimeException("Can only use adaptive modeling on a tightenable SLA");
+		}
 
 		TightenableSLA sla = (TightenableSLA) wf.getSLA();
 
 		List<Set<ModelQuery>> workloads = new ArrayList<>(numWorkloads);
 
-		// sample some workloads...
+		// Sample some workloads.
 		Random r = new Random(42);
 		int[] queryTypes = wf.getQueryTimePredictor().QUERY_TYPES;
 		for (int i = 0; i < numWorkloads; i++) {
@@ -76,7 +77,7 @@ public class AdaptiveModelingUtils {
 			workloads.add(toAdd);
 		}
 
-		// now train for our loosest SLA
+		// Now train for our loosest SLA.
 		log.info("Starting training for the loosest SLA");
 		Trainer t = new Trainer(wf.getQueryTimePredictor(), null, sla);
 		trainingData = t.train(workloads);
@@ -84,7 +85,7 @@ public class AdaptiveModelingUtils {
 		log.info("Finished initial training");
 
 
-		// figure out what the cost of each workload is under our current model
+		// Figure out what the cost of each workload is under our current model
 		// and SLA
 		log.info("Costing each workload in the initial plan");
 		List<Integer> costs = new ArrayList<>(numWorkloads);
@@ -100,11 +101,11 @@ public class AdaptiveModelingUtils {
 		}
 
 		for (int i = 0; i < numTightens; i++) {
-			// build a new workload spec for the tightened SLA
+			// Build a new workload spec for the tightened SLA.
 			WorkloadSpecification newWS = new WorkloadSpecification(wf.getQueryTimePredictor(),
 					sla.tighten((i+1) * increm));
 
-			// build a list of indexes for each workload that has a new cost
+			// Build a list of indexes for each workload that has a new cost.
 			List<Integer> changedIndexes = new LinkedList<>();
 			for (int j = 0; j < workloads.size(); j++) {
 				int oldCost = costs.get(j);
@@ -114,29 +115,29 @@ public class AdaptiveModelingUtils {
 				int newCost = CostUtils.getCostForPlan(newWS, sched);
 
 				if (oldCost != newCost) {
-					// add this index.
+					// Add this index.
 					changedIndexes.add(j);
 				}
 			}
 
 			log.info("After tightening, " + changedIndexes.size() + " training workloads have different costs. (SLA: " + newWS.getSLA() + ")");
 
-			// build a list of just these training workloads
+			// Build a list of just these training workloads.
 			List<Set<ModelQuery>> changedWorkloads = new ArrayList<>(changedIndexes.size());
 			for (Integer idx : changedIndexes) {
 				changedWorkloads.add(workloads.get(idx));
 			}
 
-			// retrain these workloads
+			// Retrain these workloads.
 			t = new Trainer(newWS.getQueryTimePredictor(), null, newWS.getSLA());
 			List<String> newData = t.train(changedWorkloads);
 
-			// install the new training data into the original list
+			// Install the new training data into the original list.
 			for (int idxCount = 0; idxCount < changedIndexes.size(); idxCount++) {
 				trainingData.set(changedIndexes.get(idxCount), newData.get(idxCount));
 			}
 
-			// update the cost array
+			// Update the cost array.
 			model = WiSeDBUtils.getCachedModel(
 					new ByteArrayInputStream(listToTrainingData(trainingData).getBytes()), 
 					newWS);
@@ -154,7 +155,7 @@ public class AdaptiveModelingUtils {
 	}
 
 	private static String listToTrainingData(List<String> trainingData) {
-		// remove the headers from all but the first entry
+		// Remove the headers from all but the first entry.
 		StringBuilder sb = new StringBuilder();
 		sb.append(trainingData.get(0));
 
