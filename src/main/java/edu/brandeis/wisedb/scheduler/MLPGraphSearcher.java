@@ -115,7 +115,7 @@ public class MLPGraphSearcher implements GraphSearcher {
 			File f = new File(path);
 			Files.write(sb.toString().getBytes(), f);
 			Thread.sleep(500);
-			Process p = Runtime.getRuntime().exec(glpsolPath + " --math --tmlim 5 " + path);
+			Process p = Runtime.getRuntime().exec(glpsolPath + " --math --tmlim 10 " + path);
 			p.waitFor();
 			String output = IOUtils.toString(p.getInputStream());
 			return processGLPSOLOutput(output, maxBins, queryList);
@@ -208,7 +208,7 @@ public class MLPGraphSearcher implements GraphSearcher {
 				new VMType[] { VMType.T2_SMALL },
 				new MaxLatencySLA(60000 + 91000, 1));
 		
-		MLPGraphSearcher gs = new MLPGraphSearcher((MaxLatencySLA) wf.getSLA(), wf.getQueryTimePredictor(), "/usr/local/bin/glpsol");
+		MLPGraphSearcher gs = new MLPGraphSearcher((MaxLatencySLA) wf.getSLA(), wf.getQueryTimePredictor(), "/usr/bin/glpsol");
 		
 		Set<ModelQuery> mqs = new HashSet<>();
 		mqs.add(new ModelQuery(1));

@@ -258,5 +258,13 @@ public class DTSearcher implements GraphSearcher {
 		}
 		return last.getPossibleActions().iterator().next();
 	}
+	
+	public String getTree() {
+		try {
+			return tree.graph();
+		} catch (Exception e) {
+			return "An error while building the tree: " + e.getMessage();
+		}
+	}
 
 }

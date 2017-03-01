@@ -213,5 +213,9 @@ public class WiSeDBUtils {
 		throw new RuntimeException("Got unexpected action in convertToAdvisorAction: " + a);
 
 	}
+	
+	public static String getDecisionTree(WiSeDBCachedModel wdcm) {
+		return wdcm.getDT().getTree();
+	}
 
 }
