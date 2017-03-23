@@ -64,7 +64,7 @@ public class SchedulerUtils {
 		algos.add(new FirstFitDecreasingGraphSearch(wf.getSLA(), qtp, true));
 		algos.add(new PackNGraphSearch(9, qtp, wf.getSLA()));
 		algos.add(new EachTypeGraphSearch(qtp));
-		if (wf.getSLA() instanceof MaxLatencySLA && WiSeDBUtils.GLPSOL_PATH != null) {
+		if (wf.getSLA() instanceof MaxLatencySLA && WiSeDBUtils.GLPSOL_PATH != null && WiSeDBUtils.GLPSOL_ENABLED) {
 			algos.add(new MLPGraphSearcher((MaxLatencySLA) wf.getSLA(), qtp, WiSeDBUtils.GLPSOL_PATH));
 		}
 
@@ -83,6 +83,17 @@ public class SchedulerUtils {
 			return null;
 		}
 
-		return min.get();
+		List<Action> bestActions = min.get();
+		List<Action> ffdActions = (new FirstFitDecreasingGraphSearch(wf.getSLA(), qtp, false))
+				.schedule(toSchedule);
+		
+		int bestCost = CostModelUtil.getCostForPlan(bestActions, wf.getSLA(), qtp);
+		int ffdCost = CostModelUtil.getCostForPlan(ffdActions, wf.getSLA(), qtp);
+		
+		if (ffdCost == bestCost)
+			return ffdActions;
+		
+		return bestActions;
+		
 	}
 }

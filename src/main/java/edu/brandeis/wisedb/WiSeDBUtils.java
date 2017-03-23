@@ -54,6 +54,7 @@ import edu.brandeis.wisedb.scheduler.training.decisiontree.Trainer;
 public class WiSeDBUtils {
 
 	public static String GLPSOL_PATH = null;
+	public static boolean GLPSOL_ENABLED = false;
 	
 	// hide the default constructor
 	private WiSeDBUtils() { }

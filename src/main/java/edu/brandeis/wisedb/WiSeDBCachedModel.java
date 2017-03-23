@@ -40,6 +40,10 @@ public class WiSeDBCachedModel {
 		return dt;
 	}
 	
+	public String getDecisionTree() {
+		return dt.getTree();
+	}
+	
 	public String getTrainingData() {
 		return trainingData;
 	}
