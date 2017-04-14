@@ -303,11 +303,11 @@ public class Trainer implements AutoCloseable{
 
 	private String encodeAction(Action a) {
 		if (a instanceof StartNewVMAction) {
-			return "N" + ((StartNewVMAction) a).getVM().getTypeString();
+			return "New " + ((StartNewVMAction) a).getVM().getTypeString();
 		}
 
 		if (a instanceof AssignQueryAction) {
-			return "P" + ((AssignQueryAction)a).getQuery().getType();
+			return "Place Q" + ((AssignQueryAction)a).getQuery().getType();
 		}
 
 		return "error";

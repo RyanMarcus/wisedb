@@ -223,10 +223,10 @@ public class SingularMachineState extends State {
 		for (Integer type : qtp.QUERY_TYPES) {
 			if (getLastVM() != null) {
 				long queriesOfType = getLastVM().getQueries().stream().filter(q -> q.getType() == type).count();
-				toR.put("proportion-of-" + type, String.valueOf((float)queriesOfType/totalQueries));
+				toR.put("proportion-of-Q" + type, String.valueOf((float)queriesOfType/totalQueries));
 				continue;
 			}
-			toR.put("proportion-of-" + type, "?");
+			toR.put("proportion-of-Q" + type, "?");
 		}
 		
 		
@@ -237,7 +237,7 @@ public class SingularMachineState extends State {
 
 			
 			if (vms.peek() == null) {
-				toR.put(type + "-fits", "?");
+				toR.put("Q" + type + "-fits", "?");
 				continue;
 			}
 			
@@ -246,21 +246,21 @@ public class SingularMachineState extends State {
 					.max((a, b) -> qtp.predict(a, getLastVM()) - qtp.predict(b, getLastVM()));
 
 			if (!largest.isPresent()) {
-				toR.put(type + "-fits", "?");
+				toR.put("Q" + type + "-fits", "?");
 				continue;
 			}
 
 			int oldPenalty = getSLAPenalty();
 			State newState = getNewStateForAction(new AssignQueryAction(largest.get(), vms.peek()));
 			int penalty = newState.getSLAPenalty();
-			toR.put(type + "-fits", String.valueOf(penalty - oldPenalty));
+			toR.put("Q" + type + "-fits", String.valueOf(penalty - oldPenalty));
 
 		}
 		
 		
 		for (Integer type : qtp.QUERY_TYPES) {
 			boolean have = unassigned.stream().anyMatch(q -> q.getType() == type);
-			toR.put("have-" + type, (have ? "Y" : "N"));
+			toR.put("unassigned-Q" + type, (have ? "Y" : "N"));
 		}
 		
 		// use the wait time of the most recent VM

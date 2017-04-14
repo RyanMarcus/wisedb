@@ -208,16 +208,16 @@ public class DTSearcher implements GraphSearcher {
 	}
 
 	private boolean actionMatches(Action a, String fromWeka) {
-		if (fromWeka.startsWith("P")) {
+		if (fromWeka.startsWith("Place Q")) {
 			if (!(a instanceof AssignQueryAction))
 				return false;
 
-			int queryType = Integer.parseInt(fromWeka.substring(1));
+			int queryType = Integer.parseInt(fromWeka.substring(7));
 			return ((AssignQueryAction) a).getQuery().getType() == queryType;
 		}
 
-		if (fromWeka.startsWith("N") && (a instanceof StartNewVMAction)) {
-			if (fromWeka.substring(1).equals(((StartNewVMAction) a).getVM().getTypeString()))
+		if (fromWeka.startsWith("New ") && (a instanceof StartNewVMAction)) {
+			if (fromWeka.substring(4).equals(((StartNewVMAction) a).getVM().getTypeString()))
 				return true;
 		}
 
