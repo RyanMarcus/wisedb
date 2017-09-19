@@ -23,6 +23,7 @@ WiSeDB is designed to assist cloud applications in making three types of decisio
 WiSeDB provides a complete, integrated answer to these problems, and it does so in an *SLA-aware* way. WiSeDB utilizes *machine learning* in order to create *custom heuristics* that are tailored to an application's workload and performance goal.
 
 ![Animation of three tasks](https://raw.githubusercontent.com/RyanMarcus/wisedb/master/res/workloadmang.gif)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FRyanMarcus%2Fwisedb.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FRyanMarcus%2Fwisedb?ref=badge_shield)
 
 ## Example
 
@@ -132,3 +133,6 @@ Output:
 # License
 
 WiSeDB is "research-ware", and is probably filled with bugs, undocumented features, and general trouble. It is GPLv3 licensed.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FRyanMarcus%2Fwisedb.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FRyanMarcus%2Fwisedb?ref=badge_large)
