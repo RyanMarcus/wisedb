@@ -132,3 +132,6 @@ Output:
 # License
 
 WiSeDB is "research-ware", and is probably filled with bugs, undocumented features, and general trouble. It is GPLv3 licensed.
+
+# Acknowledgment
+This research was funded by NSF IIS 1253196. 
